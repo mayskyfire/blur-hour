@@ -18,7 +18,7 @@ export default defineNuxtConfig({
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover' },
         { name: 'description', content: 'Find singles in your venue tonight' },
-        { name: 'theme-color', content: '#0ea5e9' },
+        { name: 'theme-color', content: '#00FFFF' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' }
       ],
@@ -32,8 +32,8 @@ export default defineNuxtConfig({
       name: 'Blur Hour',
       short_name: 'BlurHour',
       description: 'Find singles in your venue tonight',
-      theme_color: '#0ea5e9',
-      background_color: '#020617',
+      theme_color: '#00FFFF',
+      background_color: '#0E0E33',
       display: 'standalone',
       orientation: 'portrait',
       start_url: '/',
@@ -52,5 +52,16 @@ export default defineNuxtConfig({
     devOptions: { enabled: true, type: 'module' }
   },
 
-  typescript: { strict: true, typeCheck: false }
+  typescript: { strict: true, typeCheck: false },
+
+  runtimeConfig: {
+    public: {
+      firebaseApiKey: process.env.NUXT_PUBLIC_FIREBASE_API_KEY,
+      firebaseAuthDomain: process.env.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      firebaseProjectId: process.env.NUXT_PUBLIC_FIREBASE_PROJECT_ID,
+      firebaseStorageBucket: process.env.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      firebaseMessagingSenderId: process.env.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+      firebaseAppId: process.env.NUXT_PUBLIC_FIREBASE_APP_ID
+    }
+  }
 })

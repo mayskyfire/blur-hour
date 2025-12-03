@@ -20,6 +20,11 @@ export interface Profile {
   tags: string[]
   lookingFor: string
   status: 'single' | 'busy' | 'hidden'
+  photos: string[]
+  lineId?: string
+  instagram?: string
+  tiktok?: string
+  x?: string
   createdAt: Timestamp | Date
   updatedAt: Timestamp | Date
 }

@@ -3,9 +3,10 @@
     <header class="sticky top-0 z-50 bg-night-light/80 backdrop-blur-lg border-b border-slate-700/50">
       <div class="flex items-center justify-between px-4 py-3">
         <NuxtLink to="/" class="flex items-center gap-2">
-          <div class="text-2xl font-bold bg-gradient-to-r from-neonCyan to-neonGreen bg-clip-text text-transparent">
-            🍸 Blur Hour
-          </div>
+          <span class="text-2xl">🍸</span>
+          <span class="text-xl font-bold bg-gradient-to-r from-neonCyan to-neonPink bg-clip-text text-transparent">
+            Blur Hour
+          </span>
         </NuxtLink>
         <NuxtLink v-if="currentUser" to="/profile" class="w-10 h-10 rounded-full bg-gradient-to-br from-neonPink to-neonCyan flex items-center justify-center shadow-neon-cyan">
           <span class="text-lg">👤</span>

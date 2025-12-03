@@ -4,8 +4,8 @@
       <!-- Branding -->
       <div class="text-center space-y-4">
         <div class="text-7xl mb-4">🍸</div>
-        <h1 class="text-5xl font-bold bg-gradient-to-r from-neonCyan via-neonGreen to-neonPink bg-clip-text text-transparent">
-          Blur Hour
+        <h1 class="text-5xl font-bold">
+          <span class="bg-gradient-to-r from-neonCyan to-neonPink bg-clip-text text-transparent">Blur Hour</span>
         </h1>
         <p class="text-xl text-slate-300">
           Find singles in your venue tonight
@@ -27,7 +27,7 @@
         <button
           @click="enterVenue"
           :disabled="!venueCode"
-          class="w-full py-4 bg-gradient-to-r from-neonCyan to-neonGreen rounded-xl font-semibold text-lg shadow-neon-cyan hover:shadow-neon-green transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          class="w-full py-4 bg-gradient-to-r from-neonCyan to-neonGreen rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Start Blur Hour
         </button>

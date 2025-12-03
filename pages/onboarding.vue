@@ -117,6 +117,30 @@
           </div>
         </div>
 
+        <!-- Photos -->
+        <div>
+          <label class="block text-sm text-slate-400 mb-2">Photos (up to 6)</label>
+          <div class="grid grid-cols-3 gap-2">
+            <div v-for="(photo, i) in form.photos" :key="i" class="relative aspect-square rounded-xl overflow-hidden bg-slate-800">
+              <img :src="photo" class="w-full h-full object-cover" />
+              <button type="button" @click="removePhoto(i)" class="absolute top-1 right-1 w-6 h-6 bg-red-500 rounded-full text-white text-xs">×</button>
+            </div>
+            <button v-if="form.photos.length < 6" type="button" @click="photoInput?.click()" class="aspect-square rounded-xl border-2 border-dashed border-slate-700 flex items-center justify-center text-slate-500 hover:border-neonCyan hover:text-neonCyan transition-colors">
+              <span class="text-3xl">+</span>
+            </button>
+          </div>
+          <input ref="photoInput" type="file" accept="image/*" multiple @change="handlePhotoUpload" class="hidden" />
+        </div>
+
+        <!-- Social Accounts -->
+        <div class="space-y-3">
+          <label class="block text-sm text-slate-400 mb-2">Social Accounts (optional)</label>
+          <input v-model="form.lineId" type="text" placeholder="Line ID" class="w-full px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-neonCyan" />
+          <input v-model="form.instagram" type="text" placeholder="Instagram @username" class="w-full px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-neonCyan" />
+          <input v-model="form.tiktok" type="text" placeholder="TikTok @username" class="w-full px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-neonCyan" />
+          <input v-model="form.x" type="text" placeholder="X (Twitter) @username" class="w-full px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-neonCyan" />
+        </div>
+
         <button
           type="submit"
           :disabled="loading"
@@ -143,8 +167,16 @@ const form = reactive({
   lookingFor: 'เพื่อนกินดื่ม',
   zone: 'Bar Counter',
   mood: 'อยากคุย 🍻',
-  tags: [] as string[]
+  tags: [] as string[],
+  photos: [] as string[],
+  lineId: '',
+  instagram: '',
+  tiktok: '',
+  x: ''
 })
+
+const photoInput = ref<HTMLInputElement>()
+const uploadingPhotos = ref(false)
 
 const genders = [
   { value: 'male', label: 'Male' },
@@ -169,10 +201,31 @@ const toggleTag = (tag: string) => {
   }
 }
 
+const handlePhotoUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const files = target.files
+  if (!files) return
+
+  uploadingPhotos.value = true
+  Array.from(files).forEach(file => {
+    if (form.photos.length >= 6) return
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      form.photos.push(e.target?.result as string)
+      uploadingPhotos.value = false
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
+const removePhoto = (index: number) => {
+  form.photos.splice(index, 1)
+}
+
 const submitProfile = async () => {
   loading.value = true
   try {
-    await createOrUpdateProfile({
+    const profileData: any = {
       venueId: route.query.venueId as string || 'default',
       displayName: form.displayName,
       age: form.age,
@@ -181,8 +234,16 @@ const submitProfile = async () => {
       mood: form.mood,
       tags: form.tags,
       lookingFor: form.lookingFor,
-      status: 'single'
-    })
+      status: 'single',
+      photos: form.photos
+    }
+
+    if (form.lineId) profileData.lineId = form.lineId
+    if (form.instagram) profileData.instagram = form.instagram
+    if (form.tiktok) profileData.tiktok = form.tiktok
+    if (form.x) profileData.x = form.x
+
+    await createOrUpdateProfile(profileData)
 
     router.push('/discover')
   } catch (error) {
