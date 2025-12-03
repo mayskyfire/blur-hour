@@ -20,15 +20,19 @@
 
     <nav v-if="currentUser && showBottomNav" class="sticky bottom-0 bg-night-light/90 backdrop-blur-lg border-t border-slate-700/50 safe-bottom">
       <div class="flex items-center justify-around px-4 py-3">
-        <NuxtLink to="/discover" class="flex flex-col items-center gap-1 transition-colors" :class="route.path === '/discover' ? 'text-neonCyan' : 'text-slate-400'">
-          <span class="text-2xl">🔥</span>
-          <span class="text-xs">Discover</span>
+        <NuxtLink :to="liveGridUrl" class="flex flex-col items-center gap-1 transition-colors" :class="route.path.includes('/live') ? 'text-neonCyan' : 'text-slate-400'">
+          <span class="text-2xl">👥</span>
+          <span class="text-xs">Live</span>
         </NuxtLink>
-        <NuxtLink to="/chats" class="flex flex-col items-center gap-1 transition-colors" :class="route.path.startsWith('/chats') ? 'text-neonPink' : 'text-slate-400'">
+        <NuxtLink to="/discover" class="flex flex-col items-center gap-1 transition-colors" :class="route.path === '/discover' ? 'text-neonPink' : 'text-slate-400'">
+          <span class="text-2xl">🔥</span>
+          <span class="text-xs">Swipe</span>
+        </NuxtLink>
+        <NuxtLink to="/chats" class="flex flex-col items-center gap-1 transition-colors" :class="route.path.startsWith('/chats') ? 'text-neonGreen' : 'text-slate-400'">
           <span class="text-2xl">💬</span>
           <span class="text-xs">Chats</span>
         </NuxtLink>
-        <NuxtLink to="/profile" class="flex flex-col items-center gap-1 transition-colors" :class="route.path === '/profile' ? 'text-neonGreen' : 'text-slate-400'">
+        <NuxtLink to="/profile" class="flex flex-col items-center gap-1 transition-colors" :class="route.path === '/profile' ? 'text-slate-300' : 'text-slate-400'">
           <span class="text-2xl">⚙️</span>
           <span class="text-xs">Profile</span>
         </NuxtLink>
@@ -39,6 +43,20 @@
 
 <script setup lang="ts">
 const { currentUser } = useAuth()
+const { getCurrentProfile } = useProfiles()
 const route = useRoute()
 const showBottomNav = computed(() => !['/onboarding', '/'].includes(route.path))
+
+const currentProfile = ref(null)
+const liveGridUrl = computed(() => {
+  return currentProfile.value?.venueId 
+    ? `/venue/${currentProfile.value.venueId}/live`
+    : '/venue/demo-bar/live'
+})
+
+onMounted(async () => {
+  if (currentUser.value) {
+    currentProfile.value = await getCurrentProfile()
+  }
+})
 </script>

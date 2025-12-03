@@ -64,7 +64,7 @@ const enterVenue = () => {
   if (!venueCode.value) return
   
   router.push({
-    path: '/onboarding',
+    path: '/mode-selection',
     query: { venueId: venueCode.value }
   })
 }

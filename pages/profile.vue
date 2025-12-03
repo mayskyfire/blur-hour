@@ -11,18 +11,40 @@
         <!-- Profile Card -->
         <div class="bg-slate-900/80 backdrop-blur-xl rounded-card border border-slate-700/60 p-6 space-y-4">
           <div class="text-center">
-            <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-neonPink to-neonCyan flex items-center justify-center text-5xl mb-4">
-              👤
+            <div class="w-24 h-24 mx-auto rounded-full overflow-hidden mb-4">
+              <img 
+                v-if="profile.photos?.[0]" 
+                :src="profile.photos[0]" 
+                :alt="profile.displayName"
+                class="w-full h-full object-cover"
+              />
+              <div 
+                v-else
+                class="w-full h-full bg-gradient-to-br from-neonPink to-neonCyan flex items-center justify-center text-5xl"
+              >
+                {{ profile.displayName.charAt(0) }}
+              </div>
             </div>
             <h2 class="text-2xl font-bold">{{ profile.displayName }}</h2>
-            <p class="text-slate-400">{{ profile.age }} • {{ profile.gender }}</p>
+            <p class="text-slate-400">{{ profile.ageRange }} • {{ getGenderLabel(profile.gender) }}</p>
+          </div>
+
+          <!-- Photos Gallery -->
+          <div v-if="profile.photos && profile.photos.length > 1" class="grid grid-cols-3 gap-2">
+            <div 
+              v-for="(photo, i) in profile.photos.slice(1)"
+              :key="i"
+              class="aspect-square rounded-lg overflow-hidden"
+            >
+              <img :src="photo" class="w-full h-full object-cover" />
+            </div>
           </div>
 
           <div class="space-y-3 pt-4 border-t border-slate-700/50">
             <div class="flex items-center gap-3">
               <span class="text-2xl">{{ getMoodEmoji(profile.mood) }}</span>
               <div>
-                <p class="text-xs text-slate-400">Mood</p>
+                <p class="text-xs text-slate-400">อารมณ์</p>
                 <p>{{ profile.mood }}</p>
               </div>
             </div>
@@ -30,29 +52,48 @@
             <div class="flex items-center gap-3">
               <span class="text-2xl">📍</span>
               <div>
-                <p class="text-xs text-slate-400">Zone</p>
+                <p class="text-xs text-slate-400">โซน</p>
                 <p>{{ profile.zone }}</p>
               </div>
             </div>
 
             <div class="flex items-center gap-3">
-              <span class="text-2xl">🔍</span>
+              <span class="text-2xl">{{ getActivityStatusEmoji(profile.activityStatus) }}</span>
               <div>
-                <p class="text-xs text-slate-400">Looking For</p>
-                <p>{{ profile.lookingFor }}</p>
+                <p class="text-xs text-slate-400">สถานะ</p>
+                <p>{{ profile.activityStatus }}</p>
               </div>
             </div>
 
             <div>
-              <p class="text-xs text-slate-400 mb-2">Tags</p>
+              <p class="text-xs text-slate-400 mb-2">บุคลิกภาพ</p>
               <div class="flex flex-wrap gap-2">
                 <span
-                  v-for="tag in profile.tags"
+                  v-for="tag in profile.personalityTags"
                   :key="tag"
                   class="px-3 py-1 bg-neonCyan/20 border border-neonCyan/30 rounded-full text-sm"
                 >
-                  {{ tag }}
+                  {{ getPersonalityTagEmoji(tag) }} {{ tag }}
                 </span>
+              </div>
+            </div>
+
+            <!-- Social Media -->
+            <div v-if="profile.lineId || profile.instagram || profile.tiktok">
+              <p class="text-xs text-slate-400 mb-2">โซเชียลมีเดีย</p>
+              <div class="flex gap-3">
+                <a v-if="profile.lineId" :href="`https://line.me/ti/p/~${profile.lineId}`" target="_blank" class="flex items-center gap-2 text-green-400 hover:text-green-300">
+                  <span>📱</span>
+                  <span class="text-sm">{{ profile.lineId }}</span>
+                </a>
+                <a v-if="profile.instagram" :href="`https://instagram.com/${profile.instagram.replace('@', '')}`" target="_blank" class="flex items-center gap-2 text-pink-400 hover:text-pink-300">
+                  <span>📸</span>
+                  <span class="text-sm">{{ profile.instagram }}</span>
+                </a>
+                <a v-if="profile.tiktok" :href="`https://tiktok.com/@${profile.tiktok.replace('@', '')}`" target="_blank" class="flex items-center gap-2 text-red-400 hover:text-red-300">
+                  <span>🎵</span>
+                  <span class="text-sm">{{ profile.tiktok }}</span>
+                </a>
               </div>
             </div>
           </div>
@@ -113,13 +154,23 @@ onMounted(async () => {
 })
 
 const getMoodEmoji = (mood: string): string => {
-  const moodMap: Record<string, string> = {
-    'อยากคุย': '🍻',
-    'อยากเต้น': '💃',
-    'ชิล ๆ': '🎵',
-    'สนุก': '🎉'
-  }
-  return moodMap[mood] || '✨'
+  const moodObj = MOODS.find(m => m.value === mood)
+  return moodObj?.emoji || '✨'
+}
+
+const getGenderLabel = (gender: string): string => {
+  const genderObj = GENDERS.find(g => g.value === gender)
+  return genderObj?.label || gender
+}
+
+const getActivityStatusEmoji = (status: string): string => {
+  const statusObj = ACTIVITY_STATUS.find(s => s.value === status)
+  return statusObj?.emoji || '✨'
+}
+
+const getPersonalityTagEmoji = (tag: string): string => {
+  const tagObj = PERSONALITY_TAGS.find(t => t.value === tag)
+  return tagObj?.emoji || '✨'
 }
 
 const toggleStatus = async () => {
