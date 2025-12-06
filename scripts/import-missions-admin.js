@@ -58,6 +58,7 @@ async function importData() {
     const sampleUser = {
       points: 0,
       activeMissions: [],
+      completedMissions: [],
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     }

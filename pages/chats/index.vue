@@ -22,13 +22,14 @@
 
       <div v-else class="space-y-3">
         <NuxtLink
-          v-for="chat in chatsWithProfiles.slice(0, 1)"
+          v-for="chat in chatsWithProfiles"
           :key="chat.id"
           :to="`/chats/${chat.id}`"
-          class="block bg-slate-900/80 backdrop-blur-xl rounded-xl border border-slate-700/60 p-4 hover:border-neonCyan/50 transition-all"
+          class="block bg-slate-900/80 backdrop-blur-xl rounded-xl border border-slate-700/60 p-4 hover:border-neonCyan/50 transition-all relative"
         >
+          <UnreadBadge :count="chat[`unreadCount_${currentUser?.uid}`] || 0" />
           <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded-full overflow-hidden">
+            <div class="w-14 h-14 rounded-full overflow-hidden relative">
               <img 
                 v-if="chat.otherProfile?.photos?.[0] && (chat.otherProfile.photos[0].startsWith('data:') || chat.otherProfile.photos[0].startsWith('http'))" 
                 :src="chat.otherProfile.photos[0]" 
@@ -62,34 +63,44 @@
 </template>
 
 <script setup lang="ts">
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, collection, query, where, onSnapshot } from 'firebase/firestore'
 import type { Chat, Profile } from '~/types'
+import UnreadBadge from '~/components/UnreadBadge.vue'
 
-const { getUserChats } = useChats()
 const { currentUser } = useAuth()
 const { db } = useFirebase()
 
 const loading = ref(true)
-const chats = ref<Chat[]>([])
 const chatsWithProfiles = ref<Array<Chat & { otherProfile?: Profile }>>([])
 
-onMounted(async () => {
-  chats.value = await getUserChats()
+let unsubscribe: (() => void) | null = null
 
-  // Fetch other user profiles
-  for (const chat of chats.value) {
-    const otherUserId = chat.userIds.find(id => id !== currentUser.value?.uid)
-    if (otherUserId) {
-      const profileDoc = await getDoc(doc(db, 'profiles', otherUserId))
-      if (profileDoc.exists()) {
-        chatsWithProfiles.value.push({
-          ...chat,
-          otherProfile: { id: profileDoc.id, ...profileDoc.data() } as Profile
-        })
+onMounted(async () => {
+  if (!currentUser.value) return
+  
+  const q = query(collection(db, 'chats'), where('userIds', 'array-contains', currentUser.value.uid))
+  
+  unsubscribe = onSnapshot(q, async (snapshot) => {
+    const chats = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Chat))
+    
+    chatsWithProfiles.value = []
+    for (const chat of chats) {
+      const otherUserId = chat.userIds.find(id => id !== currentUser.value?.uid)
+      if (otherUserId) {
+        const profileDoc = await getDoc(doc(db, 'profiles', otherUserId))
+        if (profileDoc.exists()) {
+          chatsWithProfiles.value.push({
+            ...chat,
+            otherProfile: { id: profileDoc.id, ...profileDoc.data() } as Profile
+          })
+        }
       }
     }
-  }
+    loading.value = false
+  })
+})
 
-  loading.value = false
+onUnmounted(() => {
+  if (unsubscribe) unsubscribe()
 })
 </script>

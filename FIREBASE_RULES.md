@@ -6,58 +6,70 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-    
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-    
-    match /venues/{venueId} {
-      allow read: if isAuthenticated();
-      allow write: if false;
-    }
-    
+    // Profiles
     match /profiles/{userId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated() && isOwner(userId);
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
     
+    // Swipes
     match /swipes/{swipeId} {
-      allow read, write: if isAuthenticated();
+      allow read, write: if request.auth != null;
     }
     
+    // Matches
     match /matches/{matchId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated();
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
     }
     
+    // Chats
     match /chats/{chatId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated();
+      allow read: if request.auth != null && 
+                     request.auth.uid in resource.data.userIds;
+      allow write: if request.auth != null;
       
       match /messages/{messageId} {
-        allow read: if isAuthenticated();
-        allow write: if isAuthenticated();
+        allow read: if request.auth != null;
+        allow write: if request.auth != null;
       }
     }
     
-    match /vibes/{vibeId} {
-      allow read, write: if isAuthenticated();
+    // Missions - อนุญาตให้ทุกคนอ่านได้
+    match /missions/{missionId} {
+      allow read: if request.auth != null;
+      allow write: if false; // เฉพาะ admin
     }
     
-    match /blocks/{blockId} {
-      allow read, write: if isAuthenticated();
+    // Rewards - อนุญาตให้ทุกคนอ่านได้
+    match /rewards/{rewardId} {
+      allow read: if request.auth != null;
+      allow write: if false; // เฉพาะ admin
     }
     
+    // Users - อนุญาตให้อ่าน/เขียนข้อมูลตัวเองได้
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Reports - ให้ user รายงานได้
     match /reports/{reportId} {
-      allow read, write: if isAuthenticated();
+      allow create: if request.auth != null && 
+                       request.resource.data.reporterId == request.auth.uid;
+      allow read: if false; // เฉพาะ admin
+      allow update, delete: if false; // เฉพาะ admin
     }
     
-    match /zones/{zoneId} {
-      allow read: if isAuthenticated();
-      allow write: if false;
+    // Blocks - ให้ user บล็อกได้
+    match /blocks/{blockId} {
+      allow read, write: if request.auth != null && 
+                            request.auth.uid == resource.data.blockerId;
+      allow create: if request.auth != null && 
+                       request.resource.data.blockerId == request.auth.uid;
+    }
+    
+    match /{document=**} {
+      allow read, write: if request.auth != null;
     }
   }
 }

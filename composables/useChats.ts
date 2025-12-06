@@ -29,6 +29,21 @@ export const useChats = () => {
       expiresAt: expiresAt
     }
     await addDoc(collection(db, 'chats', chatId, 'messages'), messageData)
+    
+    // อัปเดต unread count สำหรับผู้รับ
+    const { doc: docRef, getDoc, updateDoc, increment } = await import('firebase/firestore')
+    const chatRef = docRef(db, 'chats', chatId)
+    const chatDoc = await getDoc(chatRef)
+    if (chatDoc.exists()) {
+      const chatData = chatDoc.data()
+      const otherUserId = chatData.userIds.find((id: string) => id !== currentUser.value!.uid)
+      if (otherUserId) {
+        await updateDoc(chatRef, {
+          [`unreadCount_${otherUserId}`]: increment(1),
+          lastMessageAt: serverTimestamp()
+        })
+      }
+    }
   }
 
   const getUserChats = async (): Promise<Chat[]> => {

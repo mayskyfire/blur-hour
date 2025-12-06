@@ -148,7 +148,7 @@
 </template>
 
 <script setup lang="ts">
-import { collection, query, where, getDocs, doc, updateDoc, onSnapshot } from 'firebase/firestore'
+import { collection, query, where, getDocs, doc, updateDoc, onSnapshot, getDoc, serverTimestamp } from 'firebase/firestore'
 
 const { db } = useFirebase()
 const { currentUser } = useAuth()
@@ -207,6 +207,7 @@ const loadUserData = async () => {
         await setDoc(userDocRef, {
           points: 0,
           activeMissions: [],
+          completedMissions: [],
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
         })
@@ -295,8 +296,23 @@ const completeMission = async (missionId: string) => {
     
     try {
       const userDocRef = doc(db, 'users', currentUser.value.uid)
+      const userDoc = await getDoc(userDocRef)
+      const userData = userDoc.data()
+      
+      // เตรียม completed mission เพื่อบันทึกประวัติ
+      const completedMission = {
+        missionId: mission.id,
+        title: mission.title,
+        points: mission.points,
+        completedAt: serverTimestamp()
+      }
+      
+      const completedMissions = userData?.completedMissions || []
+      completedMissions.push(completedMission)
+      
       await updateDoc(userDocRef, {
         activeMissions: activeMissions.value,
+        completedMissions: completedMissions,
         points: userPoints.value + mission.points
       })
       

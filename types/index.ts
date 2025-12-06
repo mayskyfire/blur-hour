@@ -21,3 +21,21 @@ export interface SwipeHistory {
   createdAt: any
   matchStatus: 'matched' | 'pending' | 'not-matched'
 }
+
+export interface Chat {
+  id: string
+  userIds: string[]
+  matchId: string
+  venueId: string
+  createdAt: any
+  lastMessageAt?: any
+  [key: `unreadCount_${string}`]: number
+}
+
+export interface Message {
+  id: string
+  senderId: string
+  text: string
+  createdAt: any
+  expiresAt: any
+}
