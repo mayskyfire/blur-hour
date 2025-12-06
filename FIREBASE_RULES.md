@@ -42,6 +42,23 @@ service cloud.firestore {
         allow write: if isAuthenticated();
       }
     }
+    
+    match /vibes/{vibeId} {
+      allow read, write: if isAuthenticated();
+    }
+    
+    match /blocks/{blockId} {
+      allow read, write: if isAuthenticated();
+    }
+    
+    match /reports/{reportId} {
+      allow read, write: if isAuthenticated();
+    }
+    
+    match /zones/{zoneId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
   }
 }
 ```

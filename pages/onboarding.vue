@@ -2,11 +2,51 @@
   <div class="min-h-screen p-6 pb-20">
     <div class="max-w-md mx-auto space-y-6">
       <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold mb-2">สร้างโปรไฟล์</h1>
-        <p class="text-slate-400">เตรียมตัวสำหรับคืนนี้กันเถอะ</p>
+        <h1 class="text-3xl font-bold mb-2">{{ hasExistingProfile ? 'แก้ไขโปรไฟล์' : 'สร้างโปรไฟล์' }}</h1>
+        <p class="text-slate-400">{{ hasExistingProfile ? 'อัพเดทข้อมูลของคุณ' : 'เตรียมตัวสำหรับคืนนี้กันเถอะ' }}</p>
       </div>
 
       <form @submit.prevent="submitProfile" class="space-y-4">
+        <!-- Profile Photo -->
+        <div>
+          <label class="block text-sm text-slate-400 mb-2">รูปโปรไฟล์</label>
+          <div class="flex justify-center">
+            <div class="relative w-32 h-32">
+              <div v-if="form.profilePhoto" class="w-full h-full rounded-full overflow-hidden bg-slate-800 border-4 border-neonCyan">
+                <img :src="form.profilePhoto" class="w-full h-full object-cover" />
+              </div>
+              <button 
+                v-else
+                type="button" 
+                @click="profilePhotoInput?.click()" 
+                class="w-full h-full rounded-full border-2 border-dashed border-slate-700 flex items-center justify-center text-slate-500 hover:border-neonCyan hover:text-neonCyan transition-colors bg-slate-800"
+              >
+                <div class="text-center">
+                  <div class="text-3xl mb-1">📷</div>
+                  <div class="text-xs">เพิ่มรูป</div>
+                </div>
+              </button>
+              <button 
+                v-if="form.profilePhoto"
+                type="button" 
+                @click="form.profilePhoto = ''; profilePhotoInput!.value = ''" 
+                class="absolute -top-2 -right-2 w-8 h-8 bg-red-500 rounded-full text-white flex items-center justify-center hover:bg-red-600"
+              >
+                ×
+              </button>
+              <button 
+                v-if="form.profilePhoto"
+                type="button" 
+                @click="profilePhotoInput?.click()" 
+                class="absolute -bottom-2 -right-2 w-8 h-8 bg-neonCyan rounded-full text-white flex items-center justify-center hover:bg-neonCyan/80"
+              >
+                ✏️
+              </button>
+            </div>
+          </div>
+          <input ref="profilePhotoInput" type="file" accept="image/*" @change="handleProfilePhotoUpload" class="hidden" />
+        </div>
+
         <!-- Display Name -->
         <div>
           <label class="block text-sm text-slate-400 mb-2">ชื่อเล่น</label>
@@ -129,18 +169,18 @@
           </div>
         </div>
 
-        <!-- Photos -->
+        <!-- Photos Gallery -->
         <div>
-          <label class="block text-sm text-slate-400 mb-2">รูปภาพ (อัปโหลดได้ 3 รูป)</label>
+          <label class="block text-sm text-slate-400 mb-2">แกลเลอรี่ (อัปโหลดได้ 3 รูป)</label>
           <div class="grid grid-cols-3 gap-2">
-            <div v-for="(photo, i) in form.photos" :key="i" class="relative aspect-square rounded-xl overflow-hidden bg-slate-800">
+            <div v-for="(photo, i) in form.galleryPhotos" :key="i" class="relative aspect-square rounded-xl overflow-hidden bg-slate-800">
               <img :src="photo" class="w-full h-full object-cover" />
-              <button type="button" @click="removePhoto(i)" class="absolute top-1 right-1 w-6 h-6 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">×</button>
+              <button type="button" @click="removeGalleryPhoto(i)" class="absolute top-1 right-1 w-6 h-6 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">×</button>
             </div>
             <button 
-              v-if="form.photos.length < 3" 
+              v-if="form.galleryPhotos.length < 3" 
               type="button" 
-              @click="photoInput?.click()" 
+              @click="galleryPhotoInput?.click()" 
               class="aspect-square rounded-xl border-2 border-dashed border-slate-700 flex items-center justify-center text-slate-500 hover:border-neonCyan hover:text-neonCyan transition-colors"
             >
               <div class="text-center">
@@ -149,7 +189,7 @@
               </div>
             </button>
           </div>
-          <input ref="photoInput" type="file" accept="image/*" multiple @change="handlePhotoUpload" class="hidden" />
+          <input ref="galleryPhotoInput" type="file" accept="image/*" multiple @change="handleGalleryPhotoUpload" class="hidden" />
         </div>
 
         <!-- Social Media -->
@@ -189,9 +229,9 @@
         <button
           type="submit"
           :disabled="loading"
-          class="w-full py-4 bg-gradient-to-r from-neonCyan to-neonGreen rounded-xl font-semibold text-lg shadow-neon-cyan mt-8"
+          class="w-full py-4 bg-gradient-to-r from-neonPink to-neonCyan rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50"
         >
-          {{ loading ? 'กำลังสร้าง...' : 'เข้าร่วมปาร์ตี้!' }}
+          {{ loading ? 'กำลังสร้าง...' : 'เริ่มใช้งาน 🚀' }}
         </button>
       </form>
     </div>
@@ -205,6 +245,7 @@ const { createOrUpdateProfile } = useProfiles()
 const { detectZoneFromUrl } = useZones()
 
 const loading = ref(false)
+const hasExistingProfile = ref(false)
 
 const form = reactive({
   displayName: '',
@@ -215,14 +256,16 @@ const form = reactive({
   personalityTags: [] as string[],
   activityStatus: 'พร้อมคุยเลย' as any,
   status: 'single' as const,
-  photos: [] as string[],
+  profilePhoto: '' as string,
+  galleryPhotos: [] as string[],
   lineId: '',
   instagram: '',
   tiktok: '',
   x: ''
 })
 
-const photoInput = ref<HTMLInputElement>()
+const profilePhotoInput = ref<HTMLInputElement>()
+const galleryPhotoInput = ref<HTMLInputElement>()
 const uploadingPhotos = ref(false)
 
 const togglePersonalityTag = (tag: string) => {
@@ -234,31 +277,43 @@ const togglePersonalityTag = (tag: string) => {
   }
 }
 
-const handlePhotoUpload = (event: Event) => {
+const handleProfilePhotoUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    form.profilePhoto = e.target?.result as string
+  }
+  reader.readAsDataURL(file)
+}
+
+const handleGalleryPhotoUpload = (event: Event) => {
   const target = event.target as HTMLInputElement
   const files = target.files
   if (!files) return
 
   uploadingPhotos.value = true
   Array.from(files).forEach(file => {
-    if (form.photos.length >= 3) return
+    if (form.galleryPhotos.length >= 3) return
     const reader = new FileReader()
     reader.onload = (e) => {
-      form.photos.push(e.target?.result as string)
+      form.galleryPhotos.push(e.target?.result as string)
       uploadingPhotos.value = false
     }
     reader.readAsDataURL(file)
   })
 }
 
-const removePhoto = (index: number) => {
-  form.photos.splice(index, 1)
+const removeGalleryPhoto = (index: number) => {
+  form.galleryPhotos.splice(index, 1)
 }
 
 const submitProfile = async () => {
   loading.value = true
   try {
-    const venueId = route.query.venue as string || 'demo-bar'
+    const venueId = route.query.venue as string || 'NEON123'
     const detectedZone = detectZoneFromUrl()
     
     const profileData: any = {
@@ -271,7 +326,7 @@ const submitProfile = async () => {
       personalityTags: form.personalityTags,
       activityStatus: form.activityStatus,
       status: form.status,
-      photos: form.photos
+      photos: form.profilePhoto ? [form.profilePhoto, ...form.galleryPhotos] : form.galleryPhotos
     }
 
     // Add social media if provided
@@ -289,11 +344,31 @@ const submitProfile = async () => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   // Auto-detect zone from QR code URL
   const detectedZone = detectZoneFromUrl()
   if (detectedZone) {
     form.zone = detectedZone
+  }
+
+  // Load existing profile if available
+  const { getCurrentProfile } = useProfiles()
+  const existingProfile = await getCurrentProfile()
+  if (existingProfile) {
+    hasExistingProfile.value = true
+    form.displayName = existingProfile.displayName
+    form.ageRange = existingProfile.ageRange
+    form.gender = existingProfile.gender
+    form.zone = existingProfile.zone
+    form.mood = existingProfile.mood
+    form.personalityTags = existingProfile.personalityTags || []
+    form.activityStatus = existingProfile.activityStatus
+    const photos = existingProfile.photos || []
+    form.profilePhoto = photos[0] || ''
+    form.galleryPhotos = photos.slice(1)
+    form.lineId = existingProfile.lineId || ''
+    form.instagram = existingProfile.instagram || ''
+    form.tiktok = existingProfile.tiktok || ''
   }
 })
 </script>

@@ -4,6 +4,7 @@
       <div class="text-center mb-6">
         <h1 class="text-2xl font-bold mb-2">สร้างโปรไฟล์ 30 วินาที</h1>
         <p class="text-slate-400">เลือกแบบง่าย ๆ ได้เลย</p>
+        <p v-if="hasExistingProfile" class="text-xs text-neonCyan mt-2">พบข้อมูลเดิมของคุณ</p>
       </div>
 
       <form @submit.prevent="submitProfile" class="space-y-5">
@@ -81,6 +82,25 @@
           </div>
         </div>
 
+        <!-- Personality Tags -->
+        <div>
+          <label class="block text-sm text-slate-400 mb-2">บุคลิกภาพ (เลือก 1-3)</label>
+          <div class="flex flex-wrap gap-2">
+            <button
+              v-for="tag in personalityTags"
+              :key="tag.value"
+              type="button"
+              @click="togglePersonalityTag(tag.value)"
+              class="px-3 py-2 rounded-full text-sm border transition-all"
+              :class="form.personalityTags.includes(tag.value)
+                ? 'bg-neonCyan/20 border-neonCyan text-neonCyan'
+                : 'bg-slate-800/50 border-slate-700 text-slate-300'"
+            >
+              {{ tag.emoji }} {{ tag.label }}
+            </button>
+          </div>
+        </div>
+
         <!-- Looking For -->
         <div>
           <label class="block text-sm text-slate-400 mb-2">มองหาอะไร</label>
@@ -125,6 +145,7 @@ const form = reactive({
   age: 25,
   gender: 'male' as 'male' | 'female' | 'other',
   tags: [] as string[],
+  personalityTags: [] as string[],
   lookingFor: 'เพื่อนกินดื่ม'
 })
 
@@ -139,10 +160,18 @@ const quickTags = [
   { value: 'สายเกม', emoji: '🎮', label: 'สายเกม' }
 ]
 
+const personalityTags = [
+  { value: 'สายฮา', emoji: '😆', label: 'สายฮา' },
+  { value: 'สายคุยลึก', emoji: '🧠', label: 'สายคุยลึก' },
+  { value: 'สายแดนซ์', emoji: '🕺', label: 'สายแดนซ์' },
+  { value: 'สายเกม', emoji: '🎮', label: 'สายเกม' },
+  { value: 'สายร้องเพลง', emoji: '🎤', label: 'สายร้องเพลง' }
+]
+
 const lookingForOptions = ['เพื่อนกินดื่ม', 'คนคุย', 'สายเต้น', 'สายเล่นเกม']
 
 const isValid = computed(() => {
-  return form.displayName && form.age >= 18 && form.tags.length > 0
+  return form.displayName && form.age >= 18 && (form.tags.length > 0 || form.personalityTags.length > 0)
 })
 
 const toggleTag = (tag: string) => {
@@ -154,21 +183,41 @@ const toggleTag = (tag: string) => {
   }
 }
 
+const togglePersonalityTag = (tag: string) => {
+  const index = form.personalityTags.indexOf(tag)
+  if (index > -1) {
+    form.personalityTags.splice(index, 1)
+  } else if (form.personalityTags.length < 3) {
+    form.personalityTags.push(tag)
+  }
+}
+
 const submitProfile = async () => {
   loading.value = true
   try {
     const mode = route.query.mode as string || 'single'
     const status = mode === 'busy' ? 'hidden' : mode === 'maybe' ? 'busy' : 'single'
+    const venueId = route.query.venueId as string || 'NEON123'
+    
+    console.log('Submit profile - venueId:', venueId)
+    console.log('Route query:', route.query)
+
+    // Convert age to age range
+    const ageRange = form.age < 23 ? '18-22' : 
+                    form.age < 28 ? '23-27' : 
+                    form.age < 33 ? '28-32' : 
+                    form.age < 38 ? '33-37' : 
+                    form.age < 43 ? '38-42' : '43+'
 
     const profileData: any = {
-      venueId: route.query.venueId as string || 'default',
+      venueId,
       displayName: form.displayName,
-      age: form.age,
+      ageRange,
       gender: form.gender,
-      zone: 'General',
-      mood: form.tags[0] || 'ชิล ๆ',
-      tags: form.tags,
-      lookingFor: form.lookingFor,
+      zone: 'Zone A',
+      mood: 'อยากคุย',
+      personalityTags: form.personalityTags.length > 0 ? form.personalityTags : form.tags,
+      activityStatus: 'พร้อมคุยเลย',
       status,
       photos: [form.avatar]
     }
@@ -178,7 +227,9 @@ const submitProfile = async () => {
     if (status === 'hidden') {
       router.push('/profile')
     } else {
-      router.push('/discover')
+      const targetPath = `/venue/${venueId}`
+      console.log('Navigating to:', targetPath)
+      router.push(targetPath)
     }
   } catch (error) {
     console.error('Profile creation error:', error)
@@ -186,4 +237,22 @@ const submitProfile = async () => {
     loading.value = false
   }
 }
+
+const hasExistingProfile = ref(false)
+
+onMounted(async () => {
+  const { getCurrentProfile } = useProfiles()
+  const existingProfile = await getCurrentProfile()
+  if (existingProfile) {
+    hasExistingProfile.value = true
+    form.displayName = existingProfile.displayName
+    form.age = existingProfile.ageRange ? parseInt(existingProfile.ageRange.split('-')[0]) : 25
+    form.gender = existingProfile.gender
+    form.tags = existingProfile.personalityTags || []
+    
+    if (existingProfile.photos && existingProfile.photos.length > 0) {
+      form.avatar = existingProfile.photos[0]
+    }
+  }
+})
 </script>

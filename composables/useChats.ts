@@ -10,7 +10,8 @@ export const useChats = () => {
     return onSnapshot(q, (snapshot) => {
       const now = new Date()
       const messages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message)).filter(msg => {
-        const expiresAt = msg.expiresAt instanceof Date ? msg.expiresAt : msg.expiresAt.toDate()
+        if (!msg.expiresAt) return true
+        const expiresAt = msg.expiresAt instanceof Date ? msg.expiresAt : (msg.expiresAt.toDate ? msg.expiresAt.toDate() : new Date(msg.expiresAt))
         return expiresAt > now
       })
       callback(messages)
@@ -24,8 +25,8 @@ export const useChats = () => {
     const messageData: Omit<Message, 'id'> = {
       senderId: currentUser.value.uid,
       text,
-      createdAt: serverTimestamp() as any,
-      expiresAt: expiresAt as any
+      createdAt: new Date(),
+      expiresAt: expiresAt
     }
     await addDoc(collection(db, 'chats', chatId, 'messages'), messageData)
   }

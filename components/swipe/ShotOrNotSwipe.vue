@@ -1,25 +1,26 @@
 <template>
-  <div class="relative w-full h-full">
+  <div class="relative w-full h-full flex flex-col">
     <div 
       ref="stackRef"
-      class="relative w-full h-full"
+      class="relative flex-1 pb-24"
       @mousedown="handleStart"
       @touchstart="handleStart"
     >
       <ProfileCard
         v-for="(profile, index) in visibleProfiles"
-        :key="profile.id"
+        :key="profile.userId"
         :profile="profile"
         :rotation="index === 0 ? rotation : 0"
         :translateX="index === 0 ? translateX : 0"
         :translateY="index === 0 ? translateY : 0"
         :swipeDirection="index === 0 ? swipeDirection : null"
+        :hasVibeFromUser="props.receivedVibes.includes(profile.userId)"
         :style="{ zIndex: visibleProfiles.length - index }"
       />
     </div>
 
     <!-- Controls -->
-    <div class="absolute bottom-8 left-0 right-0 flex items-center justify-center gap-8 z-50">
+    <div class="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-8 py-4 bg-gradient-to-t from-night via-night/80 to-transparent">
       <button
         @click="() => handleButtonSwipe('left')"
         class="w-16 h-16 rounded-full bg-slate-800/80 backdrop-blur border-2 border-slate-600 flex items-center justify-center text-3xl hover:scale-110 transition-transform active:scale-95"
@@ -29,10 +30,9 @@
 
       <div class="flex gap-2">
         <div 
-          v-for="i in Math.min(profiles.length, 3)" 
+          v-for="i in Math.min(profiles.length, 1)" 
           :key="i"
-          class="w-2 h-2 rounded-full"
-          :class="i === 1 ? 'bg-neonCyan' : 'bg-slate-600'"
+          class="w-2 h-2 rounded-full bg-neonCyan"
         />
       </div>
 
@@ -48,12 +48,16 @@
 
 <script setup lang="ts">
 import type { Profile } from '~/types'
+import ProfileCard from '~/components/swipe/ProfileCard.vue'
 
 interface Props {
   profiles: Profile[]
+  receivedVibes?: string[]
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  receivedVibes: () => []
+})
 const emit = defineEmits<{
   swipe: [{ profile: Profile; direction: 'left' | 'right' }]
 }>()

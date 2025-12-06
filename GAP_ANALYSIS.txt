@@ -1,0 +1,268 @@
+🍸 BLUR HOUR - GAP ANALYSIS
+วิเคราะห์ความต่างระหว่างสิ่งที่มีอยู่และความต้องการตาม Spec
+
+================================================================================
+✅ สิ่งที่ทำเสร็จแล้ว (COMPLETED FEATURES)
+================================================================================
+
+1. ✅ PWA Infrastructure
+   - Nuxt 4 + Vue 3 + TypeScript setup
+   - Tailwind CSS with dark neon theme
+   - PWA manifest and service worker
+   - Firebase integration (Auth + Firestore)
+
+2. ✅ Basic User System
+   - Firebase Authentication
+   - Profile creation and management
+   - Venue-based user filtering
+
+3. ✅ Core Swipe System
+   - Tinder-style swipe interface (ShotOrNotSwipe component)
+   - Match detection when both users swipe right
+   - Profile cards with basic info display
+
+4. ✅ Basic Chat System
+   - Ephemeral messaging (6-hour expiry)
+   - Real-time chat for matched users
+   - Chat list and individual chat rooms
+
+5. ✅ Admin Dashboard (Basic)
+   - Simple stats display
+   - User count, matches, active chats
+
+6. ✅ Basic Data Models
+   - Users/Profiles collection
+   - Swipes collection
+   - Matches collection
+   - Chats with messages subcollection
+
+================================================================================
+❌ สิ่งที่ยังขาดและต้องทำ (MISSING FEATURES)
+================================================================================
+
+🔴 CORE CUSTOMER FEATURES (สำคัญมาก)
+================================================================================
+
+1. ❌ Thai Profile System (ระบบโปรไฟล์แบบไทย)
+   MISSING:
+   - Age range instead of exact age (20-25, 26-30)
+   - Thai personality tags: 😆 สายฮา, 🧠 สายคุยลึก, 🕺 สายแดนซ์, 🎮 สายเกม, 🎤 สายร้องเพลง
+   - Thai mood selector: "อยากคุย", "ไม่ค่อยอยากคุย", "อยากเต้น", "อยากร้องคาราโอเกะ"
+   - Semi-anonymous (nickname only, no last name)
+
+2. ❌ Live Singles Grid (หน้าแสดงคนโสดในบาร์)
+   MISSING:
+   - Grid/card view instead of swipe-only
+   - Filters: Gender, Age range, Mood, Zone
+   - Activity badges: 🟢 "พร้อมคุยเลย", 🟠 "กำลังเต้น", 🔵 "กำลังร้องเพลง"
+   - Zone-based filtering (Zone A, B, Outdoor, Bar Counter)
+   - Page: /venue/[venueId]/live
+
+3. ❌ "Send a Vibe" System (ส่งสัญญาณ)
+   MISSING:
+   - 🍻 "ขอชนแก้วหน่อยไหม"
+   - 🎵 "ชอบเพลงที่คุณขอเมื่อกี้เลย"
+   - 😆 "ขอคุยเล่นหน่อย"
+   - One-tap signal system
+   - Mutual vibe = match
+   - No rejection notifications (protect self-esteem)
+   - Vibes collection in Firestore
+
+4. ❌ Enhanced Ephemeral Chat
+   MISSING:
+   - "ขอชนแก้วโต๊ะนี้" button (bar staff request)
+   - "อยากมาร่วมโต๊ะไหม" button (join table request)
+   - Auto-delete at venue closing time (04:00)
+   - Bar requests collection for staff
+
+5. ❌ "Crush in this bar" System
+   MISSING:
+   - Pick 1-3 crushes from live list
+   - Mutual crush detection
+   - Special notification: "คุณสองคนแอบปิ๊งกันอยู่ 😉"
+   - One-sided crushes stay hidden
+   - Crushes collection + Cloud Functions
+
+🟡 FUN & ENGAGEMENT FEATURES (สำคัญปานกลาง)
+================================================================================
+
+6. ❌ Mini Missions/Games
+   MISSING:
+   - Mission engine: "หาคนที่ชอบเพลงเดียวกับคุณแล้วมาชนแก้วกัน"
+   - Mission completion system (both users confirm)
+   - Rewards: badges, points, venue coupons
+   - Collections: missions, user_missions, rewards
+
+7. ❌ Song Request + Flirty Messages
+   MISSING:
+   - Song request system
+   - Public messages for TV/projector
+   - Example: "เพลงนี้ขอให้โต๊ะหมายเลข 5 จากโต๊ะ 8 😉"
+   - Staff approval system
+   - song_requests collection
+
+8. ❌ Ice-breaker Questions in Chat
+   MISSING:
+   - Random question generator
+   - Thai questions: "คุณเป็นสายเที่ยวภูเขาหรือทะเล?"
+   - Button to insert questions into chat
+   - Predefined question database
+
+🟠 VENUE/ADMIN FEATURES (สำคัญสำหรับเจ้าของร้าน)
+================================================================================
+
+9. ❌ Enhanced Live Dashboard
+   MISSING:
+   - Real-time user count by zone
+   - Gender & age distribution charts
+   - Most requested songs
+   - Zone activity heatmap
+   - Firestore aggregation/Cloud Functions
+
+10. ❌ Broadcast System
+    MISSING:
+    - Send messages to all venue users
+    - Examples: "เบียร์ 1 แถม 1 เฉพาะ 30 นาทีนี้"
+    - Real-time broadcast delivery
+    - broadcasts collection
+
+11. ❌ Zone-specific QR Codes
+    MISSING:
+    - Each table/zone has unique QR
+    - Auto-detect user's zone_id
+    - Zone-based filtering and missions
+    - zones collection
+
+🔵 WOW FEATURES (ดีมีดีไม่มีไม่เป็นไร)
+================================================================================
+
+12. ❌ Mini Map of Venue
+    MISSING:
+    - Visual venue layout
+    - Zone activity bubbles
+    - "Which zone is lively" indicator
+
+13. ❌ Shy Mode
+    MISSING:
+    - Auto-suggested intro messages
+    - Similar tags matching
+    - "Suggest intro" button
+
+14. ❌ AI Icebreaker Helper
+    MISSING:
+    - "ช่วยคิดประโยคเริ่มคุยให้หน่อย" button
+    - Generated opening lines
+    - Tag-based suggestions
+
+🔴 PRIVACY & SAFETY (สำคัญมาก - ต้องทำ)
+================================================================================
+
+15. ❌ Report/Block System
+    MISSING:
+    - Report inappropriate users
+    - Block functionality
+    - Blocked users can't send vibes/messages
+    - reports/blocks collection
+
+16. ❌ Privacy Controls
+    MISSING:
+    - Hide real last names (only nicknames)
+    - No phone numbers/external contacts
+    - Zone-only location (not exact table)
+    - Terms of Service screen
+
+17. ❌ Enhanced Security Rules
+    MISSING:
+    - Venue-only data access
+    - Anti-spam protection
+    - Admin role separation
+    - Proper user isolation
+
+================================================================================
+📋 TECHNICAL DEBT & IMPROVEMENTS NEEDED
+================================================================================
+
+1. ❌ Data Model Updates
+   - Add age ranges instead of exact age
+   - Add Thai mood/tag enums
+   - Add zone information
+   - Add activity status tracking
+   - Add crush relationships
+   - Add mission/reward systems
+
+2. ❌ UI/UX Improvements
+   - Thai language support throughout
+   - Grid view for singles (not just swipe)
+   - Better filter controls
+   - Zone selection interface
+   - Mission/game interfaces
+
+3. ❌ Real-time Features
+   - Activity status updates (last seen)
+   - Live zone population
+   - Real-time broadcasts
+   - Mission notifications
+
+4. ❌ Cloud Functions Needed
+   - Mutual crush detection
+   - Message expiry cleanup
+   - Activity status updates
+   - Mission completion logic
+   - Broadcast delivery
+
+5. ❌ Admin Panel Enhancements
+   - Song request approval
+   - Broadcast composer
+   - User management
+   - Mission management
+   - Zone configuration
+
+================================================================================
+🎯 PRIORITY ROADMAP
+================================================================================
+
+🔴 PHASE 1 (MVP - Must Have):
+1. Thai profile system with age ranges, moods, tags
+2. "Send a Vibe" system replacing swipes
+3. Live singles grid with filters
+4. Zone-based QR codes and user detection
+5. Report/Block system
+6. Enhanced security rules
+
+🟡 PHASE 2 (Core Features):
+7. Crush system
+8. Enhanced chat features (bar requests, table invites)
+9. Broadcast system for venues
+10. Song request system
+11. Mini missions/games
+
+🟠 PHASE 3 (Nice to Have):
+12. Ice-breaker questions
+13. Venue mini-map
+14. Shy mode features
+15. AI icebreaker helper
+
+================================================================================
+📊 COMPLETION STATUS
+================================================================================
+
+✅ Completed: ~25% (Basic infrastructure, swipe, chat, admin basics)
+🔴 Critical Missing: ~40% (Thai features, vibes, zones, safety)
+🟡 Important Missing: ~25% (Games, songs, broadcasts)
+🟠 Nice-to-Have Missing: ~10% (AI, maps, shy mode)
+
+TOTAL WORK REMAINING: ~75% of specification requirements
+
+================================================================================
+🚀 NEXT IMMEDIATE STEPS
+================================================================================
+
+1. Update Profile model with Thai age ranges, moods, tags
+2. Create Vibe system to replace current swipe system
+3. Add Zone detection and QR code system
+4. Build Live Singles Grid page (/venue/[venueId]/live)
+5. Implement Report/Block safety features
+6. Update Firestore security rules for venue isolation
+
+The current codebase provides a solid foundation, but significant work is needed
+to match the Thai nightlife specification requirements.

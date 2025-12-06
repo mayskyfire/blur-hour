@@ -1,10 +1,27 @@
-import { collection, doc, setDoc, getDoc, query, where, onSnapshot, serverTimestamp, updateDoc, type Unsubscribe } from 'firebase/firestore'
+import { collection, doc, setDoc, getDoc, query, where, onSnapshot, serverTimestamp, updateDoc, getDocs, type Unsubscribe } from 'firebase/firestore'
 import type { Profile } from '~/types'
 
 export const useProfiles = () => {
   const { db } = useFirebase()
   const { currentUser } = useAuth()
-  const { getBlockedUsers } = useSafety()
+  
+  const getBlockedUsers = async (venueId: string): Promise<string[]> => {
+    if (!currentUser.value) return []
+    
+    try {
+      const q = query(
+        collection(db, 'blocks'),
+        where('blockerId', '==', currentUser.value.uid),
+        where('venueId', '==', venueId)
+      )
+      
+      const snapshot = await getDocs(q)
+      return snapshot.docs.map(doc => doc.data().blockedUserId)
+    } catch (error) {
+      console.warn('Error fetching blocked users:', error)
+      return []
+    }
+  }
 
   const createOrUpdateProfile = async (profileData: Omit<Profile, 'id' | 'userId' | 'createdAt' | 'updatedAt' | 'lastActiveAt'>) => {
     if (!currentUser.value) throw new Error('Not authenticated')
@@ -39,14 +56,24 @@ export const useProfiles = () => {
   }
 
   const subscribeVenueProfiles = (venueId: string, callback: (profiles: Profile[]) => void): Unsubscribe => {
-    const q = query(collection(db, 'profiles'), where('venueId', '==', venueId), where('status', '==', 'single'))
+    const q = query(collection(db, 'profiles'), where('venueId', '==', venueId))
     return onSnapshot(q, async (snapshot) => {
       let profiles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Profile))
-        .filter(p => p.userId !== currentUser.value?.uid)
       
-      // Filter out blocked users
-      const blockedUserIds = await getBlockedUsers(venueId)
-      profiles = profiles.filter(p => !blockedUserIds.includes(p.userId))
+      // Only filter out current user if authenticated
+      if (currentUser.value) {
+        profiles = profiles.filter(p => p.userId !== currentUser.value.uid)
+      }
+      
+      try {
+        // Filter out blocked users only if authenticated
+        if (currentUser.value) {
+          const blockedUserIds = await getBlockedUsers(venueId)
+          profiles = profiles.filter(p => !blockedUserIds.includes(p.userId))
+        }
+      } catch (error) {
+        console.warn('Could not fetch blocked users:', error)
+      }
       
       callback(profiles)
     })
@@ -70,11 +97,24 @@ export const useProfiles = () => {
     return profiles
   }
 
+  const getProfileById = async (userId: string): Promise<Profile | null> => {
+    try {
+      const profileRef = doc(db, 'profiles', userId)
+      const profileDoc = await getDoc(profileRef)
+      if (!profileDoc.exists()) return null
+      return { id: profileDoc.id, ...profileDoc.data() } as Profile
+    } catch (error) {
+      console.error('Error getting profile:', error)
+      return null
+    }
+  }
+
   return { 
     createOrUpdateProfile, 
     getCurrentProfile, 
     subscribeVenueProfiles,
     updateActivityStatus,
-    getProfilesByZone
+    getProfilesByZone,
+    getProfileById
   }
 }

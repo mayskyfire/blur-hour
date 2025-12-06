@@ -8,17 +8,42 @@
             Blur Hour
           </span>
         </NuxtLink>
-        <NuxtLink v-if="currentUser" to="/profile" class="w-10 h-10 rounded-full bg-gradient-to-br from-neonPink to-neonCyan flex items-center justify-center shadow-neon-cyan">
-          <span class="text-lg">👤</span>
-        </NuxtLink>
+        <ClientOnly>
+          <NuxtLink v-if="currentUser" to="/profile" class="w-10 h-10 rounded-full bg-gradient-to-br from-neonPink to-neonCyan flex items-center justify-center shadow-neon-cyan overflow-hidden">
+            <img
+              v-if="currentProfile?.photos?.[0] && (currentProfile.photos[0].startsWith('data:') || currentProfile.photos[0].startsWith('http'))"
+              :src="currentProfile.photos[0]"
+              :alt="currentProfile.displayName"
+              class="w-full h-full object-cover"
+            />
+            <span v-else class="text-lg">👤</span>
+          </NuxtLink>
+        </ClientOnly>
       </div>
     </header>
 
     <main class="flex-1 overflow-auto">
       <slot />
     </main>
+    
+    <!-- Notification Toasts -->
+    <div class="fixed top-20 right-4 z-50 space-y-2">
+      <div
+        v-for="notification in notifications"
+        :key="notification.id"
+        class="bg-slate-900/90 backdrop-blur-xl border rounded-xl p-4 shadow-lg animate-slide-in-right max-w-sm"
+        :class="{
+          'border-neonGreen': notification.type === 'success',
+          'border-red-500': notification.type === 'error',
+          'border-neonCyan': notification.type === 'info'
+        }"
+      >
+        <p class="text-white text-sm">{{ notification.message }}</p>
+      </div>
+    </div>
 
-    <nav v-if="currentUser && showBottomNav" class="sticky bottom-0 bg-night-light/90 backdrop-blur-lg border-t border-slate-700/50 safe-bottom">
+    <ClientOnly>
+      <nav v-if="currentUser && showBottomNav" class="sticky bottom-0 bg-night-light/90 backdrop-blur-lg border-t border-slate-700/50 safe-bottom">
       <div class="flex items-center justify-around px-4 py-3">
         <NuxtLink :to="liveGridUrl" class="flex flex-col items-center gap-1 transition-colors" :class="route.path.includes('/live') ? 'text-neonCyan' : 'text-slate-400'">
           <span class="text-2xl">👥</span>
@@ -37,26 +62,38 @@
           <span class="text-xs">Profile</span>
         </NuxtLink>
       </div>
-    </nav>
+      </nav>
+    </ClientOnly>
   </div>
 </template>
 
 <script setup lang="ts">
 const { currentUser } = useAuth()
 const { getCurrentProfile } = useProfiles()
+const { notifications } = useNotifications()
 const route = useRoute()
 const showBottomNav = computed(() => !['/onboarding', '/'].includes(route.path))
 
-const currentProfile = ref(null)
+const currentProfile = ref<any>(null)
 const liveGridUrl = computed(() => {
   return currentProfile.value?.venueId 
     ? `/venue/${currentProfile.value.venueId}/live`
-    : '/venue/demo-bar/live'
+    : '/venue/NEON123/live'
 })
 
 onMounted(async () => {
   if (currentUser.value) {
     currentProfile.value = await getCurrentProfile()
+    console.log('Current profile loaded:', currentProfile.value)
+  }
+})
+
+// Watch for user changes
+watch(currentUser, async (newUser) => {
+  if (newUser) {
+    currentProfile.value = await getCurrentProfile()
+  } else {
+    currentProfile.value = null
   }
 })
 </script>
