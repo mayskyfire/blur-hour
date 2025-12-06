@@ -87,6 +87,9 @@
     <div
       class="bg-slate-900/90 backdrop-blur-xl border-t border-slate-700/60 p-4 fixed bottom-[76px] left-0 right-0 z-10"
     >
+      <div class="mb-2">
+        <IcebreakerButton @select="insertQuestion" />
+      </div>
       <form @submit.prevent="sendMsg" class="flex gap-3 items-end">
         <input
           v-model="newMessage"
@@ -98,7 +101,7 @@
         <button
           type="submit"
           :disabled="!newMessage.trim()"
-          class="px-6 py-3 bg-gradient-to-r from-neonCyan to-neonGreen rounded-xl font-semibold text-white shadow-lg shadow-neonCyan/25 disabled:opacity-50 disabled:shadow-none hover:shadow-neonCyan/40 transition-all"
+          class="px-6 py-3 bg-gradient-to-r from-neonPink to-neonCyan rounded-xl font-semibold text-white shadow-lg disabled:opacity-50 disabled:shadow-none hover:shadow-xl transition-all"
         >
           ส่ง
         </button>
@@ -110,6 +113,7 @@
 <script setup lang="ts">
 import { doc, getDoc } from "firebase/firestore";
 import type { Message, Profile } from "~/types";
+import IcebreakerButton from "@/components/IcebreakerButton.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -180,5 +184,9 @@ const formatTime = (timestamp: any) => {
     hour: "2-digit",
     minute: "2-digit",
   });
+};
+
+const insertQuestion = (question: string) => {
+  newMessage.value = question;
 };
 </script>

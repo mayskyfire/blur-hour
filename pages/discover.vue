@@ -1,5 +1,5 @@
 <template>
-  <div class="h-[calc(100vh-18rem)] p-4">
+  <div class="h-[calc(100vh-13rem)] p-4">
     <!-- Stats Bar -->
     <div class="mb-4 p-3 bg-slate-900/80 rounded-xl border border-slate-700/60 flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -17,17 +17,35 @@
       </button>
     </div>
 
-    <!-- Received Vibes Indicator -->
-    <div
-      v-if="receivedVibes.length > 0"
-      class="mb-4 p-3 bg-gradient-to-r from-neonPink/20 to-neonCyan/20 rounded-xl border border-neonPink/30"
-    >
-      <div class="flex items-center gap-2">
-        <span class="text-2xl animate-pulse">💖</span>
-        <span class="text-sm font-semibold"
-          >{{ receivedVibes.length }} คนส่ง vibe ให้คุณ!</span
-        >
-      </div>
+
+
+    <!-- Toast Alerts -->
+    <div class="fixed top-20 left-4 right-4 z-50 space-y-2">
+      <!-- Zone Filter Toast -->
+      <Transition name="slide-down">
+        <div v-if="showZoneToast && selectedZone" class="bg-gradient-to-r from-neonCyan/10 to-neonPink/10 backdrop-blur-md rounded-lg p-3 shadow-lg border border-neonCyan/30 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-sm">📍</span>
+            <span class="text-sm font-semibold">กำลังดูคนใน {{ selectedZone }}</span>
+          </div>
+          <button @click="hideZoneToast" class="text-slate-400 hover:text-white text-lg leading-none">
+            ×
+          </button>
+        </div>
+      </Transition>
+      
+      <!-- Received Vibes Toast -->
+      <Transition name="slide-down">
+        <div v-if="showVibesAlert && receivedVibes.length > 0" class="bg-gradient-to-r from-neonPink/20 to-neonCyan/20 backdrop-blur-md rounded-lg p-3 shadow-lg border border-neonPink/30 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-sm animate-pulse">💖</span>
+            <span class="text-sm font-semibold">{{ receivedVibes.length }} คนส่ง vibe ให้คุณ!</span>
+          </div>
+          <button @click="hideVibesAlert" class="text-slate-400 hover:text-white text-lg leading-none">
+            ×
+          </button>
+        </div>
+      </Transition>
     </div>
 
     <div v-if="loading" class="h-full flex items-center justify-center">
@@ -190,11 +208,15 @@ import type { Profile } from "~/types";
 import ShotOrNotSwipe from "~/components/swipe/ShotOrNotSwipe.vue";
 
 const router = useRouter();
+const route = useRoute();
 const { subscribeVenueProfiles, getCurrentProfile } = useProfiles();
 const { handleSwipe: processSwipe, getSwipedProfileIds } =
   useSwipesAndMatches();
 const { subscribeToReceivedVibes } = useVibes();
 const { getSwipeHistory, getTodaySwipeCount } = useSwipeHistory();
+
+// Get zone filter from query params
+const selectedZone = computed(() => route.query.zone as string || null);
 
 const loading = ref(true);
 const profiles = ref<Profile[]>([]);
@@ -209,11 +231,23 @@ const swipeHistory = ref<any[]>([]);
 const loadingHistory = ref(false);
 const todaySwipeCount = ref(0);
 
+// Toast visibility controls
+const showZoneToast = ref(false);
+const showVibesAlert = ref(false);
+let zoneToastTimer: NodeJS.Timeout | null = null;
+let vibesAlertTimer: NodeJS.Timeout | null = null;
+
 const availableProfiles = computed(() => {
   // Show only profiles that haven't been swiped
-  const filtered = profiles.value.filter(
+  let filtered = profiles.value.filter(
     (p) => !swipedIds.value.includes(p.userId)
   );
+  
+  // Filter by zone if selected
+  if (selectedZone.value) {
+    filtered = filtered.filter(p => p.zone === selectedZone.value);
+  }
+  
   // Prioritize profiles that sent vibes to current user
   return filtered.sort((a, b) => {
     const aHasVibe = receivedVibes.value.includes(a.userId);
@@ -304,6 +338,8 @@ onMounted(async () => {
 onUnmounted(() => {
   if (unsubscribeProfiles) unsubscribeProfiles()
   if (unsubscribeVibes) unsubscribeVibes()
+  if (zoneToastTimer) clearTimeout(zoneToastTimer)
+  if (vibesAlertTimer) clearTimeout(vibesAlertTimer)
 })
 
 const handleSwipe = async ({
@@ -358,4 +394,62 @@ const goToChat = () => {
   showMatchModal.value = false;
   router.push("/chats");
 };
+
+const clearZoneFilter = () => {
+  router.push('/discover');
+};
+
+// Toast management functions
+const hideZoneToast = () => {
+  showZoneToast.value = false;
+  if (zoneToastTimer) clearTimeout(zoneToastTimer);
+};
+
+const hideVibesAlert = () => {
+  showVibesAlert.value = false;
+  if (vibesAlertTimer) clearTimeout(vibesAlertTimer);
+};
+
+// Watch for zone changes
+watch(selectedZone, (newZone) => {
+  if (newZone) {
+    showZoneToast.value = true;
+    if (zoneToastTimer) clearTimeout(zoneToastTimer);
+    zoneToastTimer = setTimeout(() => {
+      showZoneToast.value = false;
+    }, 5000);
+  } else {
+    showZoneToast.value = false;
+  }
+}, { immediate: true });
+
+// Watch for vibes changes
+watch(receivedVibes, (newVibes) => {
+  if (newVibes.length > 0) {
+    showVibesAlert.value = true;
+    if (vibesAlertTimer) clearTimeout(vibesAlertTimer);
+    vibesAlertTimer = setTimeout(() => {
+      showVibesAlert.value = false;
+    }, 5000);
+  } else {
+    showVibesAlert.value = false;
+  }
+}, { immediate: true });
 </script>
+
+<style scoped>
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-down-enter-from {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.slide-down-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+</style>

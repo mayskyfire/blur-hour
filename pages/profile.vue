@@ -168,6 +168,12 @@
 
         <!-- Actions -->
         <div class="space-y-3">
+          <NuxtLink
+            to="/song-request"
+            class="block w-full py-3 bg-gradient-to-r from-neonPink/20 to-neonCyan/20 border border-neonCyan rounded-xl font-semibold text-center hover:from-neonPink/30 hover:to-neonCyan/30 transition-all"
+          >
+            🎵 ขอเพลง
+          </NuxtLink>
           <button
             @click="editProfile"
             class="w-full py-3 bg-slate-800 border border-slate-700 rounded-xl font-semibold hover:border-neonCyan transition-colors"

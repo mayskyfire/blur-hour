@@ -59,7 +59,7 @@
         v-if="currentUser && showBottomNav"
         class="sticky bottom-0 bg-night-light/90 backdrop-blur-lg border-t border-slate-700/50 safe-bottom"
       >
-        <div class="flex items-center justify-around px-4 py-3">
+        <div class="flex items-center justify-around px-2 py-3">
           <NuxtLink
             :to="liveGridUrl"
             class="flex flex-col items-center gap-1 transition-all relative"
@@ -69,11 +69,11 @@
                 : 'text-slate-400 hover:text-slate-300'
             "
           >
-            <span class="text-2xl">👥</span>
+            <span class="text-xl">👥</span>
             <span class="text-xs font-medium">Live</span>
             <span
               v-if="route.path.includes('/live')"
-              class="absolute -bottom-1 w-8 h-0.5 bg-neonCyan rounded-full"
+              class="absolute -bottom-1 w-6 h-0.5 bg-neonCyan rounded-full"
             ></span>
           </NuxtLink>
           <NuxtLink
@@ -85,11 +85,43 @@
                 : 'text-slate-400 hover:text-slate-300'
             "
           >
-            <span class="text-2xl">🔥</span>
+            <span class="text-xl">🔥</span>
             <span class="text-xs font-medium">Swipe</span>
             <span
               v-if="route.path === '/discover'"
-              class="absolute -bottom-1 w-8 h-0.5 bg-neonPink rounded-full"
+              class="absolute -bottom-1 w-6 h-0.5 bg-neonPink rounded-full"
+            ></span>
+          </NuxtLink>
+          <NuxtLink
+            to="/venue-map"
+            class="flex flex-col items-center gap-1 transition-all relative"
+            :class="
+              route.path === '/venue-map'
+                ? 'text-neonGold scale-110'
+                : 'text-slate-400 hover:text-slate-300'
+            "
+          >
+            <span class="text-xl">🗺️</span>
+            <span class="text-xs font-medium">Map</span>
+            <span
+              v-if="route.path === '/venue-map'"
+              class="absolute -bottom-1 w-6 h-0.5 bg-neonGold rounded-full"
+            ></span>
+          </NuxtLink>
+          <NuxtLink
+            to="/missions"
+            class="flex flex-col items-center gap-1 transition-all relative"
+            :class="
+              route.path === '/missions'
+                ? 'text-purple-400 scale-110'
+                : 'text-slate-400 hover:text-slate-300'
+            "
+          >
+            <span class="text-xl">🎮</span>
+            <span class="text-xs font-medium">Quest</span>
+            <span
+              v-if="route.path === '/missions'"
+              class="absolute -bottom-1 w-6 h-0.5 bg-purple-400 rounded-full"
             ></span>
           </NuxtLink>
           <NuxtLink
@@ -101,27 +133,11 @@
                 : 'text-slate-400 hover:text-slate-300'
             "
           >
-            <span class="text-2xl">💬</span>
-            <span class="text-xs font-medium">Chats</span>
+            <span class="text-xl">💬</span>
+            <span class="text-xs font-medium">Chat</span>
             <span
               v-if="route.path.startsWith('/chats')"
-              class="absolute -bottom-1 w-8 h-0.5 bg-neonGreen rounded-full"
-            ></span>
-          </NuxtLink>
-          <NuxtLink
-            to="/profile"
-            class="flex flex-col items-center gap-1 transition-all relative"
-            :class="
-              route.path === '/profile'
-                ? 'text-white scale-110'
-                : 'text-slate-400 hover:text-slate-300'
-            "
-          >
-            <span class="text-2xl">⚙️</span>
-            <span class="text-xs font-medium">Profile</span>
-            <span
-              v-if="route.path === '/profile'"
-              class="absolute -bottom-1 w-8 h-0.5 bg-white rounded-full"
+              class="absolute -bottom-1 w-6 h-0.5 bg-neonGreen rounded-full"
             ></span>
           </NuxtLink>
         </div>
