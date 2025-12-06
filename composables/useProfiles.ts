@@ -56,26 +56,35 @@ export const useProfiles = () => {
   }
 
   const subscribeVenueProfiles = (venueId: string, callback: (profiles: Profile[]) => void): Unsubscribe => {
+    if (!venueId) {
+      console.warn('No venueId provided')
+      return () => {}
+    }
+    
     const q = query(collection(db, 'profiles'), where('venueId', '==', venueId))
     return onSnapshot(q, async (snapshot) => {
-      let profiles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Profile))
-      
-      // Only filter out current user if authenticated
-      if (currentUser.value) {
-        profiles = profiles.filter(p => p.userId !== currentUser.value.uid)
-      }
-      
       try {
+        let profiles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Profile))
+        
+        // Only filter out current user if authenticated
+        if (currentUser.value) {
+          profiles = profiles.filter(p => p.userId !== currentUser.value.uid)
+        }
+        
         // Filter out blocked users only if authenticated
         if (currentUser.value) {
           const blockedUserIds = await getBlockedUsers(venueId)
           profiles = profiles.filter(p => !blockedUserIds.includes(p.userId))
         }
+        
+        callback(profiles)
       } catch (error) {
-        console.warn('Could not fetch blocked users:', error)
+        console.error('Error processing profiles:', error)
+        callback([])
       }
-      
-      callback(profiles)
+    }, (error) => {
+      console.error('Snapshot error:', error)
+      callback([])
     })
   }
 

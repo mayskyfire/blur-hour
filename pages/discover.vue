@@ -261,61 +261,50 @@ watch(showHistoryModal, (show) => {
   if (show) loadHistory()
 })
 
-onMounted(async () => {
-  console.log("Discover page mounted");
+let unsubscribeProfiles: (() => void) | null = null
+let unsubscribeVibes: (() => void) | null = null
 
+onMounted(async () => {
   try {
     // Initialize swipedIds from localStorage
     const savedSwipedIds = JSON.parse(
       localStorage.getItem("swipedIds") || "[]"
-    );
-    swipedIds.value = savedSwipedIds;
-    console.log("Loaded swipedIds from localStorage:", swipedIds.value);
+    )
+    swipedIds.value = savedSwipedIds
 
-    currentProfile.value = await getCurrentProfile();
-    console.log("Current profile:", currentProfile.value);
+    currentProfile.value = await getCurrentProfile()
 
     if (!currentProfile.value) {
-      console.log("No current profile, but showing mock data anyway");
-      return;
+      loading.value = false
+      return
     }
-
-    console.log("Discover - Current profile:", currentProfile.value);
-    console.log("Discover - Venue ID:", currentProfile.value.venueId);
 
     const realSwipedIds = await getSwipedProfileIds(
       currentProfile.value.venueId
-    );
-    console.log("Real Swiped IDs from Firebase:", realSwipedIds);
-    // Don't overwrite swipedIds to keep mock profiles visible
-    // swipedIds.value = realSwipedIds
+    )
 
     // Subscribe to received vibes
-    subscribeToReceivedVibes((vibes) => {
-      receivedVibes.value = vibes.map((v) => v.fromUserId);
-      console.log("Received vibes from:", receivedVibes.value);
-    });
+    unsubscribeVibes = subscribeToReceivedVibes((vibes) => {
+      receivedVibes.value = vibes.map((v) => v.fromUserId)
+    })
 
-    subscribeVenueProfiles(currentProfile.value.venueId, (newProfiles) => {
-      console.log(
-        "Received profiles from Firebase:",
-        newProfiles.length,
-        newProfiles
-      );
-      profiles.value = newProfiles;
-      loading.value = false;
-      console.log(
-        "Available profiles after filter:",
-        availableProfiles.value.length
-      );
-    });
+    unsubscribeProfiles = subscribeVenueProfiles(currentProfile.value.venueId, (newProfiles) => {
+      profiles.value = newProfiles
+      loading.value = false
+    })
 
     // Load today's swipe count
-    loadTodayCount()
+    await loadTodayCount()
   } catch (error) {
-    console.error("Error in discover onMounted:", error);
+    console.error("Error in discover onMounted:", error)
+    loading.value = false
   }
-});
+})
+
+onUnmounted(() => {
+  if (unsubscribeProfiles) unsubscribeProfiles()
+  if (unsubscribeVibes) unsubscribeVibes()
+})
 
 const handleSwipe = async ({
   profile,
@@ -324,35 +313,42 @@ const handleSwipe = async ({
   profile: Profile;
   direction: "left" | "right";
 }) => {
-  // Remove from receivedVibes if this profile sent a vibe
-  const vibeIndex = receivedVibes.value.indexOf(profile.userId);
-  if (vibeIndex > -1) {
-    receivedVibes.value.splice(vibeIndex, 1);
+  if (!profile?.userId) return
+  
+  try {
+    // Remove from receivedVibes if this profile sent a vibe
+    const vibeIndex = receivedVibes.value.indexOf(profile.userId)
+    if (vibeIndex > -1) {
+      receivedVibes.value.splice(vibeIndex, 1)
+    }
+
+    // Always add to swipedIds to prevent re-showing
+    swipedIds.value.push(profile.userId)
+    
+    // Save to localStorage for persistence
+    try {
+      const savedSwipedIds = JSON.parse(localStorage.getItem("swipedIds") || "[]")
+      savedSwipedIds.push(profile.userId)
+      localStorage.setItem("swipedIds", JSON.stringify(savedSwipedIds))
+    } catch (e) {
+      console.warn('localStorage error:', e)
+    }
+
+    const result = await processSwipe(profile, direction)
+
+    if (result.matched) {
+      lastMatchProfile.value = profile
+      showMatchModal.value = true
+    }
+
+    // Update today's count if it was a right swipe
+    if (direction === 'right') {
+      todaySwipeCount.value++
+    }
+  } catch (error) {
+    console.error('Error handling swipe:', error)
   }
-
-  // Always add to swipedIds to prevent re-showing
-  swipedIds.value.push(profile.userId);
-  // Save to localStorage for persistence
-  const savedSwipedIds = JSON.parse(localStorage.getItem("swipedIds") || "[]");
-  savedSwipedIds.push(profile.userId);
-  localStorage.setItem("swipedIds", JSON.stringify(savedSwipedIds));
-
-  console.log("Swiped profile:", profile.displayName, "direction:", direction);
-  console.log("Updated swipedIds:", swipedIds.value);
-  console.log("Updated receivedVibes:", receivedVibes.value);
-
-  const result = await processSwipe(profile, direction);
-
-  if (result.matched) {
-    lastMatchProfile.value = profile;
-    showMatchModal.value = true;
-  }
-
-  // Update today's count if it was a right swipe
-  if (direction === 'right') {
-    todaySwipeCount.value++
-  }
-};
+}
 
 const closeMatchModal = () => {
   showMatchModal.value = false;

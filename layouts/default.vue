@@ -1,17 +1,29 @@
 <template>
   <div class="min-h-screen flex flex-col">
-    <header class="sticky top-0 z-50 bg-night-light/80 backdrop-blur-lg border-b border-slate-700/50">
+    <header
+      class="sticky top-0 z-50 bg-night-light/80 backdrop-blur-lg border-b border-slate-700/50"
+    >
       <div class="flex items-center justify-between px-4 py-3">
         <NuxtLink to="/" class="flex items-center gap-2">
           <span class="text-2xl">🍸</span>
-          <span class="text-xl font-bold bg-gradient-to-r from-neonCyan to-neonPink bg-clip-text text-transparent">
+          <span
+            class="text-xl font-bold bg-gradient-to-r from-neonCyan to-neonPink bg-clip-text text-transparent"
+          >
             Blur Hour
           </span>
         </NuxtLink>
         <ClientOnly>
-          <NuxtLink v-if="currentUser" to="/profile" class="w-10 h-10 rounded-full bg-gradient-to-br from-neonPink to-neonCyan flex items-center justify-center shadow-neon-cyan overflow-hidden">
+          <NuxtLink
+            v-if="currentUser"
+            to="/profile"
+            class="w-10 h-10 rounded-full bg-gradient-to-br from-neonPink to-neonCyan flex items-center justify-center shadow-neon-cyan overflow-hidden"
+          >
             <img
-              v-if="currentProfile?.photos?.[0] && (currentProfile.photos[0].startsWith('data:') || currentProfile.photos[0].startsWith('http'))"
+              v-if="
+                currentProfile?.photos?.[0] &&
+                (currentProfile.photos[0].startsWith('data:') ||
+                  currentProfile.photos[0].startsWith('http'))
+              "
               :src="currentProfile.photos[0]"
               :alt="currentProfile.displayName"
               class="w-full h-full object-cover"
@@ -25,7 +37,7 @@
     <main class="flex-1 overflow-auto">
       <slot />
     </main>
-    
+
     <!-- Notification Toasts -->
     <div class="fixed top-20 right-4 z-50 space-y-2">
       <div
@@ -35,7 +47,7 @@
         :class="{
           'border-neonGreen': notification.type === 'success',
           'border-red-500': notification.type === 'error',
-          'border-neonCyan': notification.type === 'info'
+          'border-neonCyan': notification.type === 'info',
         }"
       >
         <p class="text-white text-sm">{{ notification.message }}</p>
@@ -43,57 +55,110 @@
     </div>
 
     <ClientOnly>
-      <nav v-if="currentUser && showBottomNav" class="sticky bottom-0 bg-night-light/90 backdrop-blur-lg border-t border-slate-700/50 safe-bottom">
-      <div class="flex items-center justify-around px-4 py-3">
-        <NuxtLink :to="liveGridUrl" class="flex flex-col items-center gap-1 transition-colors" :class="route.path.includes('/live') ? 'text-neonCyan' : 'text-slate-400'">
-          <span class="text-2xl">👥</span>
-          <span class="text-xs">Live</span>
-        </NuxtLink>
-        <NuxtLink to="/discover" class="flex flex-col items-center gap-1 transition-colors" :class="route.path === '/discover' ? 'text-neonPink' : 'text-slate-400'">
-          <span class="text-2xl">🔥</span>
-          <span class="text-xs">Swipe</span>
-        </NuxtLink>
-        <NuxtLink to="/chats" class="flex flex-col items-center gap-1 transition-colors" :class="route.path.startsWith('/chats') ? 'text-neonGreen' : 'text-slate-400'">
-          <span class="text-2xl">💬</span>
-          <span class="text-xs">Chats</span>
-        </NuxtLink>
-        <NuxtLink to="/profile" class="flex flex-col items-center gap-1 transition-colors" :class="route.path === '/profile' ? 'text-slate-300' : 'text-slate-400'">
-          <span class="text-2xl">⚙️</span>
-          <span class="text-xs">Profile</span>
-        </NuxtLink>
-      </div>
+      <nav
+        v-if="currentUser && showBottomNav"
+        class="sticky bottom-0 bg-night-light/90 backdrop-blur-lg border-t border-slate-700/50 safe-bottom"
+      >
+        <div class="flex items-center justify-around px-4 py-3">
+          <NuxtLink
+            :to="liveGridUrl"
+            class="flex flex-col items-center gap-1 transition-all relative"
+            :class="
+              route.path.includes('/live')
+                ? 'text-neonCyan scale-110'
+                : 'text-slate-400 hover:text-slate-300'
+            "
+          >
+            <span class="text-2xl">👥</span>
+            <span class="text-xs font-medium">Live</span>
+            <span
+              v-if="route.path.includes('/live')"
+              class="absolute -bottom-1 w-8 h-0.5 bg-neonCyan rounded-full"
+            ></span>
+          </NuxtLink>
+          <NuxtLink
+            to="/discover"
+            class="flex flex-col items-center gap-1 transition-all relative"
+            :class="
+              route.path === '/discover'
+                ? 'text-neonPink scale-110'
+                : 'text-slate-400 hover:text-slate-300'
+            "
+          >
+            <span class="text-2xl">🔥</span>
+            <span class="text-xs font-medium">Swipe</span>
+            <span
+              v-if="route.path === '/discover'"
+              class="absolute -bottom-1 w-8 h-0.5 bg-neonPink rounded-full"
+            ></span>
+          </NuxtLink>
+          <NuxtLink
+            to="/chats"
+            class="flex flex-col items-center gap-1 transition-all relative"
+            :class="
+              route.path.startsWith('/chats')
+                ? 'text-neonGreen scale-110'
+                : 'text-slate-400 hover:text-slate-300'
+            "
+          >
+            <span class="text-2xl">💬</span>
+            <span class="text-xs font-medium">Chats</span>
+            <span
+              v-if="route.path.startsWith('/chats')"
+              class="absolute -bottom-1 w-8 h-0.5 bg-neonGreen rounded-full"
+            ></span>
+          </NuxtLink>
+          <NuxtLink
+            to="/profile"
+            class="flex flex-col items-center gap-1 transition-all relative"
+            :class="
+              route.path === '/profile'
+                ? 'text-white scale-110'
+                : 'text-slate-400 hover:text-slate-300'
+            "
+          >
+            <span class="text-2xl">⚙️</span>
+            <span class="text-xs font-medium">Profile</span>
+            <span
+              v-if="route.path === '/profile'"
+              class="absolute -bottom-1 w-8 h-0.5 bg-white rounded-full"
+            ></span>
+          </NuxtLink>
+        </div>
       </nav>
     </ClientOnly>
   </div>
 </template>
 
 <script setup lang="ts">
-const { currentUser } = useAuth()
-const { getCurrentProfile } = useProfiles()
-const { notifications } = useNotifications()
-const route = useRoute()
-const showBottomNav = computed(() => !['/onboarding', '/'].includes(route.path))
+const { currentUser } = useAuth();
+const { getCurrentProfile } = useProfiles();
+const { notifications } = useNotifications();
+const route = useRoute();
+const showBottomNav = computed(
+  () => !["/onboarding", "/"].includes(route.path)
+);
 
-const currentProfile = ref<any>(null)
+const currentProfile = ref<any>(null);
 const liveGridUrl = computed(() => {
-  return currentProfile.value?.venueId 
+  return currentProfile.value?.venueId
     ? `/venue/${currentProfile.value.venueId}/live`
-    : '/venue/NEON123/live'
-})
+    : "/venue/NEON123/live";
+});
 
 onMounted(async () => {
   if (currentUser.value) {
-    currentProfile.value = await getCurrentProfile()
-    console.log('Current profile loaded:', currentProfile.value)
+    currentProfile.value = await getCurrentProfile();
+    console.log("Current profile loaded:", currentProfile.value);
   }
-})
+});
 
 // Watch for user changes
 watch(currentUser, async (newUser) => {
   if (newUser) {
-    currentProfile.value = await getCurrentProfile()
+    currentProfile.value = await getCurrentProfile();
   } else {
-    currentProfile.value = null
+    currentProfile.value = null;
   }
-})
+});
 </script>

@@ -6,13 +6,19 @@ export const useAuth = () => {
   const loading = useState('authLoading', () => true)
 
   const signIn = async () => {
+    if (currentUser.value) return currentUser.value
+    
     try {
+      loading.value = true
       const result = await signInAnonymously(auth)
       currentUser.value = result.user
       return result.user
     } catch (error) {
       console.error('Sign in error:', error)
+      currentUser.value = null
       throw error
+    } finally {
+      loading.value = false
     }
   }
 
