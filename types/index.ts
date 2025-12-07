@@ -65,8 +65,17 @@ export interface Message {
   id: string
   senderId: string
   text: string
+  type?: 'text' | 'image' | 'sticker'
+  imageUrl?: string
+  replyTo?: {
+    messageId: string
+    text: string
+    senderId: string
+  }
   createdAt: Timestamp | Date
   expiresAt: Timestamp | Date
+  readBy?: string[]
+  status?: 'sending' | 'sent' | 'failed'
 }
 
 export interface Zone {

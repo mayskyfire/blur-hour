@@ -18,16 +18,21 @@ export const useChats = () => {
     })
   }
 
-  const sendMessage = async (chatId: string, text: string) => {
+  const sendMessage = async (chatId: string, text: string, options?: { imageUrl?: string, replyTo?: Message['replyTo'] }) => {
     if (!currentUser.value) throw new Error('Not authenticated')
     const expiresAt = new Date()
     expiresAt.setHours(expiresAt.getHours() + 6)
-    const messageData: Omit<Message, 'id'> = {
+    const messageData: any = {
       senderId: currentUser.value.uid,
       text,
-      createdAt: new Date(),
-      expiresAt: expiresAt
+      type: options?.imageUrl ? 'image' : 'text',
+      createdAt: serverTimestamp(),
+      expiresAt: expiresAt,
+      readBy: [currentUser.value.uid],
+      status: 'sent'
     }
+    if (options?.imageUrl) messageData.imageUrl = options.imageUrl
+    if (options?.replyTo) messageData.replyTo = options.replyTo
     await addDoc(collection(db, 'chats', chatId, 'messages'), messageData)
     
     // อัปเดต unread count สำหรับผู้รับ
@@ -53,5 +58,16 @@ export const useChats = () => {
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Chat))
   }
 
-  return { subscribeToMessages, sendMessage, getUserChats }
+  const markAsRead = async (chatId: string, messageIds: string[]) => {
+    if (!currentUser.value) return
+    const { doc: docRef, updateDoc, arrayUnion } = await import('firebase/firestore')
+    for (const messageId of messageIds) {
+      const messageRef = docRef(db, 'chats', chatId, 'messages', messageId)
+      await updateDoc(messageRef, {
+        readBy: arrayUnion(currentUser.value.uid)
+      })
+    }
+  }
+
+  return { subscribeToMessages, sendMessage, getUserChats, markAsRead }
 }

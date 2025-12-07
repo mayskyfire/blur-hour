@@ -99,5 +99,11 @@ service cloud.firestore {
       allow read: if request.auth != null;
       allow update: if false; // Only admins
     }
+    
+    // Icebreakers
+    match /icebreakers/{icebreakerId} {
+      allow read: if request.auth != null;
+      allow write: if false; // Only admins
+    }
   }
 }

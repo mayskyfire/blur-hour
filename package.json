@@ -9,7 +9,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "seed:profiles": "node scripts/import-profiles.js",
-    "seed:missions": "node scripts/import-missions-admin.js"
+    "seed:missions": "node scripts/import-missions-admin.js",
+    "seed:icebreakers": "node scripts/seedIcebreakers.js"
   },
   "dependencies": {
     "@nuxt/ui": "^2.18.7",

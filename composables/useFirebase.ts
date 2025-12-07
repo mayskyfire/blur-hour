@@ -1,10 +1,12 @@
 import { initializeApp, type FirebaseApp } from 'firebase/app'
 import { getAuth, type Auth } from 'firebase/auth'
 import { getFirestore, type Firestore, enableIndexedDbPersistence } from 'firebase/firestore'
+import { getStorage, type FirebaseStorage } from 'firebase/storage'
 
 let firebaseApp: FirebaseApp
 let auth: Auth
 let db: Firestore
+let storage: FirebaseStorage
 let initialized = false
 
 export const useFirebase = () => {
@@ -27,6 +29,7 @@ export const useFirebase = () => {
       firebaseApp = initializeApp(firebaseConfig)
       auth = getAuth(firebaseApp)
       db = getFirestore(firebaseApp)
+      storage = getStorage(firebaseApp)
       
       // Enable offline persistence
       if (process.client) {
@@ -46,5 +49,5 @@ export const useFirebase = () => {
     }
   }
 
-  return { app: firebaseApp, auth, db }
+  return { app: firebaseApp, auth, db, storage }
 }

@@ -15,7 +15,13 @@
           </div>
           
           <div class="p-6 space-y-3">
-            <div v-for="(question, i) in questions" :key="i"
+            <div v-if="loading" class="text-center py-8 text-slate-400">
+              กำลังโหลด...
+            </div>
+            <div v-else-if="questions.length === 0" class="text-center py-8 text-slate-400">
+              ไม่พบคำถาม
+            </div>
+            <div v-else v-for="(question, i) in questions" :key="i"
               @click="selectQuestion(question)"
               class="bg-slate-800/50 rounded-xl p-4 border border-slate-700 hover:border-neonCyan/50 transition-all cursor-pointer">
               <div class="flex items-start gap-3">
@@ -34,29 +40,32 @@
 </template>
 
 <script setup lang="ts">
+import { collection, getDocs } from 'firebase/firestore'
+
 const emit = defineEmits<{
   (e: 'select', question: string): void
 }>()
 
+const { db } = useFirebase()
 const showModal = ref(false)
+const questions = ref<any[]>([])
+const loading = ref(false)
 
-const questions = ref([
-  { emoji: '🏖️', text: 'คุณเป็นสายเที่ยวภูเขาหรือทะเล?', category: 'ไลฟ์สไตล์' },
-  { emoji: '🎵', text: 'เพลงที่ฟังแล้วมีความสุขที่สุดคืออะไร?', category: 'ดนตรี' },
-  { emoji: '🍕', text: 'อาหารที่ชอบที่สุดคืออะไร?', category: 'อาหาร' },
-  { emoji: '🎬', text: 'หนังเรื่องโปรดของคุณคืออะไร?', category: 'บันเทิง' },
-  { emoji: '✈️', text: 'ถ้าได้เที่ยวฟรี 1 ที่ อยากไปไหน?', category: 'ท่องเที่ยว' },
-  { emoji: '🎮', text: 'เกมที่เล่นบ่อยที่สุดคืออะไร?', category: 'เกม' },
-  { emoji: '☕', text: 'คุณเป็นคนตื่นเช้าหรือนอนดึก?', category: 'ไลฟ์สไตล์' },
-  { emoji: '🐶', text: 'ชอบสุนัขหรือแมว?', category: 'สัตว์เลี้ยง' },
-  { emoji: '🎨', text: 'งานอดิเรกของคุณคืออะไร?', category: 'ความสนใจ' },
-  { emoji: '🌟', text: 'ถ้าได้ superpower 1 อย่าง อยากได้อะไร?', category: 'สนุกๆ' },
-  { emoji: '📚', text: 'หนังสือเล่มสุดท้ายที่อ่านคืออะไร?', category: 'หนังสือ' },
-  { emoji: '🎤', text: 'ถ้าได้ร้องเพลงกับศิลปินคนหนึ่ง อยากร้องกับใคร?', category: 'ดนตรี' },
-  { emoji: '🍜', text: 'ร้านอาหารประจำของคุณคือที่ไหน?', category: 'อาหาร' },
-  { emoji: '🏃', text: 'ออกกำลังกายบ่อยไหม? ชอบกีฬาอะไร?', category: 'กีฬา' },
-  { emoji: '🎭', text: 'ถ้าได้เป็นตัวละครในหนัง อยากเป็นใคร?', category: 'บันเทิง' }
-])
+const loadQuestions = async () => {
+  loading.value = true
+  try {
+    const snapshot = await getDocs(collection(db, 'icebreakers'))
+    questions.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+  } catch (error) {
+    console.error('Error loading questions:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  loadQuestions()
+})
 
 const selectQuestion = (question: any) => {
   emit('select', question.text)
