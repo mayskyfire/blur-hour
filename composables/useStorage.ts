@@ -1,4 +1,4 @@
-import { ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 export const useStorage = () => {
   const { storage } = useFirebase()
@@ -8,24 +8,25 @@ export const useStorage = () => {
     if (!currentUser.value) throw new Error('Not authenticated')
     
     const timestamp = Date.now()
-    const fileName = `${currentUser.value.uid}_${timestamp}_${file.name}`
+    const fileName = `${currentUser.value.uid}_${timestamp}.jpg`
     const fileRef = storageRef(storage, `chats/${chatId}/${fileName}`)
     
     await uploadBytes(fileRef, file)
-    const downloadURL = await getDownloadURL(fileRef)
-    
-    return downloadURL
+    return await getDownloadURL(fileRef)
   }
 
   const uploadLivePhoto = async (blob: Blob, userId: string): Promise<string> => {
-    const timestamp = Date.now()
-    const fileName = `live_${userId}_${timestamp}.jpg`
-    const fileRef = storageRef(storage, `livePhotos/${userId}/${fileName}`)
+    const formData = new FormData()
+    formData.append('file', blob, 'live.jpg')
+    formData.append('userId', userId)
+    formData.append('type', 'livePhotos')
     
-    await uploadBytes(fileRef, blob)
-    const downloadURL = await getDownloadURL(fileRef)
+    const response = await $fetch<{ url: string }>('/api/upload', {
+      method: 'POST',
+      body: formData
+    })
     
-    return downloadURL
+    return response.url
   }
 
   const uploadProfilePhoto = async (file: File, userId: string): Promise<string> => {
@@ -33,45 +34,18 @@ export const useStorage = () => {
     const fileName = `profile_${timestamp}.jpg`
     const fileRef = storageRef(storage, `profiles/${userId}/${fileName}`)
     
-    return new Promise((resolve, reject) => {
-      const uploadTask = uploadBytesResumable(fileRef, file)
-      
-      uploadTask.on('state_changed',
-        () => {},
-        (error) => reject(error),
-        async () => {
-          try {
-            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref)
-            resolve(downloadURL)
-          } catch (error) {
-            reject(error)
-          }
-        }
-      )
-    })
+    await uploadBytes(fileRef, file)
+    return await getDownloadURL(fileRef)
   }
 
   const uploadGalleryPhotos = async (files: File[], userId: string): Promise<string[]> => {
-    const uploadPromises = files.map((file, index) => {
-      return new Promise<string>((resolve, reject) => {
-        const timestamp = Date.now()
-        const fileName = `gallery_${timestamp}_${index}.jpg`
-        const fileRef = storageRef(storage, `profiles/${userId}/gallery/${fileName}`)
-        const uploadTask = uploadBytesResumable(fileRef, file)
-        
-        uploadTask.on('state_changed',
-          () => {},
-          (error) => reject(error),
-          async () => {
-            try {
-              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref)
-              resolve(downloadURL)
-            } catch (error) {
-              reject(error)
-            }
-          }
-        )
-      })
+    const uploadPromises = files.map(async (file, index) => {
+      const timestamp = Date.now()
+      const fileName = `gallery_${timestamp}_${index}.jpg`
+      const fileRef = storageRef(storage, `profiles/${userId}/gallery/${fileName}`)
+      
+      await uploadBytes(fileRef, file)
+      return await getDownloadURL(fileRef)
     })
     
     return await Promise.all(uploadPromises)

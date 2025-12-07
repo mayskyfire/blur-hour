@@ -7,7 +7,7 @@ import {
   PhMicrophone, PhBrain, PhSmileyWink, PhStar,
   PhCircle, PhCheckCircle, PhWarning, PhInfo, PhPaperPlaneRight, PhGift,
   PhHeadphones, PhBeerBottle, PhMoon, PhCrown, PhArmchair, PhConfetti, PhRocket,
-  PhDotsThreeVertical, PhProhibit, PhArrowLeft
+  PhDotsThreeVertical, PhProhibit, PhArrowLeft, PhImage, PhCameraRotate, PhSpinner
 } from '@phosphor-icons/vue'
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -57,4 +57,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.component('PhDotsThreeVertical', PhDotsThreeVertical)
   nuxtApp.vueApp.component('PhProhibit', PhProhibit)
   nuxtApp.vueApp.component('PhArrowLeft', PhArrowLeft)
+  nuxtApp.vueApp.component('PhImage', PhImage)
+  nuxtApp.vueApp.component('PhCameraRotate', PhCameraRotate)
+  nuxtApp.vueApp.component('PhSpinner', PhSpinner)
 })

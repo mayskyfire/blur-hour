@@ -29,7 +29,17 @@
       </div>
 
       <!-- Grid -->
-      <div v-else class="grid grid-cols-3 gap-3">
+      <div v-else>
+        <div class="mb-4 flex justify-end">
+          <button
+            @click="showCamera = true"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl font-semibold hover:shadow-xl transition-all"
+          >
+            <PhCamera :size="18" weight="bold" />
+            ถ่ายรูป Live
+          </button>
+        </div>
+        <div class="grid grid-cols-3 gap-3">
         <div 
           v-for="photo in livePhotos" 
           :key="photo.id"
@@ -61,6 +71,7 @@
             <PhHeart :size="12" weight="fill" class="text-red-400" />
             {{ photo.likes }}
           </div>
+        </div>
         </div>
       </div>
     </div>
@@ -118,7 +129,7 @@
                   <span>{{ selectedPhoto.likes }} ถูกใจ</span>
                 </button>
                 <button 
-                  @click="sendVibeToUser(selectedPhoto.userId)"
+                  @click="showVibeSelector = true"
                   class="flex-1 py-3 bg-gradient-to-r from-neonPink to-neonCyan rounded-xl font-semibold hover:shadow-xl transition-all flex items-center justify-center gap-2"
                 >
                   <PhChatCircle :size="20" weight="fill" />
@@ -129,6 +140,59 @@
           </div>
         </div>
       </div>
+    </Teleport>
+
+    <!-- Vibe Selector Modal -->
+    <Teleport to="body">
+      <div v-if="showVibeSelector" @click="showVibeSelector = false" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-end justify-center z-[201] p-4">
+        <div @click.stop class="bg-slate-900 rounded-t-3xl w-full max-w-md p-6 space-y-3 animate-slide-up">
+          <h3 class="text-lg font-bold text-center mb-4">เลือก Vibe ที่จะส่ง</h3>
+          <button 
+            @click="sendVibeWithType('🍻')"
+            class="w-full py-4 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl font-semibold hover:shadow-xl transition-all flex items-center justify-center gap-2"
+          >
+            <span class="text-2xl">🍻</span>
+            ขอชนแก้วหน่อยไหม
+          </button>
+          <button 
+            @click="sendVibeWithType('🎵')"
+            class="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-semibold hover:shadow-xl transition-all flex items-center justify-center gap-2"
+          >
+            <span class="text-2xl">🎵</span>
+            ชอบเพลงที่คุณขอเมื่อกี้เลย
+          </button>
+          <button 
+            @click="sendVibeWithType('😆')"
+            class="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl font-semibold hover:shadow-xl transition-all flex items-center justify-center gap-2"
+          >
+            <span class="text-2xl">😆</span>
+            ขอคุยเล่นหน่อย
+          </button>
+          <button 
+            @click="showVibeSelector = false"
+            class="w-full py-4 bg-slate-800 rounded-xl font-semibold text-slate-300 hover:bg-slate-700 transition-all"
+          >
+            ยกเลิก
+          </button>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Toast -->
+    <Teleport to="body">
+      <Transition name="slide-down">
+        <div v-if="toast.show" class="fixed top-20 left-4 right-4 z-[300]">
+          <div class="bg-gradient-to-r from-neonPink/20 to-neonCyan/20 backdrop-blur-md rounded-lg p-3 shadow-lg border border-neonCyan/30 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">{{ toast.icon }}</span>
+              <span class="text-sm font-semibold">{{ toast.message }}</span>
+            </div>
+            <button @click="toast.show = false" class="text-slate-400 hover:text-white text-lg leading-none">
+              ×
+            </button>
+          </div>
+        </div>
+      </Transition>
     </Teleport>
 
     <!-- Camera Modal -->
@@ -158,6 +222,8 @@ const selectedPhoto = ref<LivePhoto | null>(null)
 const loading = ref(true)
 const profiles = ref<Map<string, Profile>>(new Map())
 const showCamera = ref(false)
+const showVibeSelector = ref(false)
+const toast = ref({ show: false, message: '', icon: '' })
 
 const venueId = ref(localStorage.getItem('lastVenueId') || '')
 
@@ -172,6 +238,14 @@ onMounted(() => {
   unsubscribe = subscribeLivePhotos(venueId.value, async (photos) => {
     livePhotos.value = photos
     loading.value = false
+
+    // Update selectedPhoto if it's open
+    if (selectedPhoto.value) {
+      const updated = photos.find(p => p.id === selectedPhoto.value?.id)
+      if (updated) {
+        selectedPhoto.value = updated
+      }
+    }
 
     // Load profiles
     for (const photo of photos) {
@@ -224,19 +298,33 @@ const likePhoto = async (photoId: string) => {
   await likeLivePhoto(photoId)
 }
 
-const sendVibeToUser = async (userId: string) => {
+const showToast = (message: string, icon: string) => {
+  toast.value = { show: true, message, icon }
+  setTimeout(() => {
+    toast.value.show = false
+  }, 5000)
+}
+
+const sendVibeWithType = async (type: '🍻' | '🎵' | '😆') => {
+  if (!selectedPhoto.value) return
+  
+  const userId = selectedPhoto.value.userId
+  
   if (userId === currentUser.value?.uid) {
-    alert('ไม่สามารถส่ง Vibe ให้ตัวเองได้')
+    showToast('ไม่สามารถส่ง Vibe ให้ตัวเองได้', '⚠️')
+    showVibeSelector.value = false
     return
   }
 
   try {
-    await sendVibe(userId, '🍻', 'เห็นรูป Live แล้วอยากทำความรู้จัก')
+    await sendVibe(userId, venueId.value, type)
+    showVibeSelector.value = false
     selectedPhoto.value = null
-    alert('ส่ง Vibe สำเร็จ! 💫')
+    showToast('ส่ง Vibe สำเร็จ!', '💫')
   } catch (error) {
     console.error('Error sending vibe:', error)
-    alert('ส่ง Vibe ไม่สำเร็จ')
+    showToast('ส่ง Vibe ไม่สำเร็จ', '❌')
+    showVibeSelector.value = false
   }
 }
 

@@ -6,7 +6,10 @@
         <button @click="close" class="p-2 text-white">
           <PhX :size="28" weight="bold" />
         </button>
-        <h2 class="text-white font-bold">📸 ถ่ายรูป Live</h2>
+        <h2 class="text-white font-bold flex items-center gap-2">
+          <PhCamera :size="20" weight="fill" />
+          ถ่ายรูป Live
+        </h2>
         <div class="w-10"></div>
       </div>
 
@@ -17,7 +20,7 @@
         <!-- Loading -->
         <div v-if="loading" class="absolute inset-0 flex items-center justify-center bg-black/50">
           <div class="text-white text-center">
-            <div class="text-4xl mb-2 animate-pulse">📸</div>
+            <PhCamera :size="48" class="mx-auto mb-2 animate-pulse" weight="fill" />
             <p>กำลังเปิดกล้อง...</p>
           </div>
         </div>
@@ -25,7 +28,7 @@
         <!-- Uploading -->
         <div v-if="uploading" class="absolute inset-0 flex items-center justify-center bg-black/80">
           <div class="text-white text-center">
-            <div class="text-4xl mb-2 animate-spin">⏳</div>
+            <PhSpinner :size="48" class="mx-auto mb-2 animate-spin" weight="bold" />
             <p>กำลังอัพโหลด...</p>
           </div>
         </div>
@@ -48,10 +51,14 @@
             <div class="w-full h-full rounded-full bg-white"></div>
           </button>
 
-          <!-- Placeholder -->
-          <div class="w-16"></div>
+          <!-- Gallery Button -->
+          <button @click="fileInput?.click()" class="p-4 bg-white/20 rounded-full backdrop-blur-sm">
+            <PhImage :size="24" class="text-white" weight="bold" />
+          </button>
         </div>
       </div>
+      
+      <input ref="fileInput" type="file" accept="image/*" @change="handleFileSelect" class="hidden" />
     </div>
   </Teleport>
 </template>
@@ -74,6 +81,7 @@ const stream = ref<MediaStream>()
 const loading = ref(true)
 const uploading = ref(false)
 const facingMode = ref<'user' | 'environment'>('user')
+const fileInput = ref<HTMLInputElement>()
 
 const startCamera = async () => {
   loading.value = true
@@ -134,6 +142,26 @@ const capture = async () => {
   } catch (error) {
     console.error('Capture error:', error)
     alert('ไม่สามารถถ่ายรูปได้')
+  } finally {
+    uploading.value = false
+  }
+}
+
+const handleFileSelect = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  uploading.value = true
+  try {
+    const blob = new Blob([file], { type: file.type })
+    const photoId = await captureLivePhoto(blob, props.venueId)
+    
+    emit('captured', photoId)
+    close()
+  } catch (error) {
+    console.error('File upload error:', error)
+    alert('ไม่สามารถอัพโหลดรูปได้')
   } finally {
     uploading.value = false
   }
