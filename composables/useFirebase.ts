@@ -18,6 +18,12 @@ export const useFirebase = () => {
   if (!initialized) {
     try {
       const config = useRuntimeConfig()
+      
+      // Debug: Log environment variables
+      console.log('Runtime config public keys:', Object.keys(config.public))
+      console.log('Firebase API Key exists:', !!config.public.firebaseApiKey)
+      console.log('Firebase Project ID exists:', !!config.public.firebaseProjectId)
+      
       const firebaseConfig = {
         apiKey: config.public.firebaseApiKey,
         authDomain: config.public.firebaseAuthDomain,
@@ -28,7 +34,14 @@ export const useFirebase = () => {
       }
 
       if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-        console.error('Firebase config:', firebaseConfig)
+        console.error('Firebase config missing! Config:', {
+          hasApiKey: !!firebaseConfig.apiKey,
+          hasAuthDomain: !!firebaseConfig.authDomain,
+          hasProjectId: !!firebaseConfig.projectId,
+          hasStorageBucket: !!firebaseConfig.storageBucket,
+          hasMessagingSenderId: !!firebaseConfig.messagingSenderId,
+          hasAppId: !!firebaseConfig.appId
+        })
         throw new Error('Firebase configuration is missing')
       }
 
