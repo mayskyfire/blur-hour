@@ -21,8 +21,12 @@ export const useFirebase = () => {
       
       // Debug: Log environment variables
       console.log('Runtime config public keys:', Object.keys(config.public))
-      console.log('Firebase API Key exists:', !!config.public.firebaseApiKey)
-      console.log('Firebase Project ID exists:', !!config.public.firebaseProjectId)
+      console.log('Firebase API Key:', config.public.firebaseApiKey ? 'EXISTS' : 'MISSING')
+      console.log('Firebase Project ID:', config.public.firebaseProjectId ? 'EXISTS' : 'MISSING')
+      console.log('Env check:', {
+        apiKey: config.public.firebaseApiKey?.substring(0, 10) + '...',
+        projectId: config.public.firebaseProjectId
+      })
       
       const firebaseConfig = {
         apiKey: config.public.firebaseApiKey,
