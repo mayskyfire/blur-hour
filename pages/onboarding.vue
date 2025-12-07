@@ -12,9 +12,14 @@
           <label class="block text-sm text-slate-400 mb-2">รูปโปรไฟล์</label>
           <div class="flex justify-center">
             <div class="relative w-32 h-32">
-              <div v-if="form.profilePhoto" class="w-full h-full rounded-full overflow-hidden bg-slate-800 border-4 border-neonCyan">
+              <button 
+                v-if="form.profilePhoto"
+                type="button" 
+                @click="showPhotoOptions = true"
+                class="w-full h-full rounded-full overflow-hidden bg-slate-800 border-4 border-neonCyan hover:border-neonPink transition-colors"
+              >
                 <img :src="form.profilePhoto" class="w-full h-full object-cover" />
-              </div>
+              </button>
               <button 
                 v-else
                 type="button" 
@@ -26,26 +31,38 @@
                   <div class="text-xs">เพิ่มรูป</div>
                 </div>
               </button>
+            </div>
+          </div>
+          <input ref="profilePhotoInput" type="file" accept="image/*" @change="handleProfilePhotoUpload" class="hidden" />
+        </div>
+
+        <!-- Photo Options Modal -->
+        <Teleport to="body">
+          <div v-if="showPhotoOptions" @click="showPhotoOptions = false" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-end justify-center z-[200] p-4">
+            <div @click.stop class="bg-slate-900 rounded-t-3xl w-full max-w-md p-6 space-y-3 animate-slide-up">
               <button 
-                v-if="form.profilePhoto"
-                type="button" 
-                @click="form.profilePhoto = ''; profilePhotoInput!.value = ''" 
-                class="absolute -top-2 -right-2 w-8 h-8 bg-red-500 rounded-full text-white text-xl font-bold flex items-center justify-center hover:bg-red-600 leading-none"
+                @click="profilePhotoInput?.click(); showPhotoOptions = false"
+                class="w-full py-4 bg-gradient-to-r from-neonCyan to-blue-500 rounded-xl font-semibold hover:shadow-xl transition-all flex items-center justify-center gap-2"
               >
-                ×
+                <PhPencil :size="20" weight="bold" />
+                เปลี่ยนรูป
               </button>
               <button 
-                v-if="form.profilePhoto"
-                type="button" 
-                @click="profilePhotoInput?.click()" 
-                class="absolute -bottom-2 -right-2 w-8 h-8 bg-neonCyan rounded-full flex items-center justify-center hover:bg-neonCyan/80"
+                @click="form.profilePhoto = ''; profilePhotoInput!.value = ''; showPhotoOptions = false"
+                class="w-full py-4 bg-red-500/20 border border-red-500 rounded-xl font-semibold text-red-400 hover:bg-red-500/30 transition-all flex items-center justify-center gap-2"
               >
-                <PhPencil :size="16" class="text-night" weight="bold" />
+                <PhTrash :size="20" weight="bold" />
+                ลบรูป
+              </button>
+              <button 
+                @click="showPhotoOptions = false"
+                class="w-full py-4 bg-slate-800 rounded-xl font-semibold text-slate-300 hover:bg-slate-700 transition-all"
+              >
+                ยกเลิก
               </button>
             </div>
           </div>
-          <input ref="profilePhotoInput" type="file" accept="image/*" capture="environment" @change="handleProfilePhotoUpload" class="hidden" />
-        </div>
+        </Teleport>
 
         <!-- Display Name -->
         <div>
@@ -189,7 +206,7 @@
               </div>
             </button>
           </div>
-          <input ref="galleryPhotoInput" type="file" accept="image/*" capture="environment" multiple @change="handleGalleryPhotoUpload" class="hidden" />
+          <input ref="galleryPhotoInput" type="file" accept="image/*" multiple @change="handleGalleryPhotoUpload" class="hidden" />
         </div>
 
         <!-- Social Media -->
@@ -256,6 +273,7 @@ const { detectZoneFromUrl } = useZones()
 
 const loading = ref(false)
 const hasExistingProfile = ref(false)
+const showPhotoOptions = ref(false)
 
 const form = reactive({
   displayName: '',
