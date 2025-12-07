@@ -1,6 +1,16 @@
 import { signInAnonymously, onAuthStateChanged, type User } from 'firebase/auth'
 
 export const useAuth = () => {
+  if (!process.client) {
+    return {
+      user: ref(null),
+      loading: ref(false),
+      signInAnonymously: async () => {},
+      signOut: async () => {},
+      initAuth: () => {}
+    }
+  }
+
   const { auth } = useFirebase()
   const currentUser = useState<User | null>('currentUser', () => null)
   const loading = useState('authLoading', () => true)

@@ -10,6 +10,11 @@ let storage: FirebaseStorage
 let initialized = false
 
 export const useFirebase = () => {
+  // Only initialize on client side
+  if (!process.client) {
+    return { app: null as any, auth: null as any, db: null as any, storage: null as any }
+  }
+
   if (!initialized) {
     try {
       const config = useRuntimeConfig()
@@ -23,6 +28,7 @@ export const useFirebase = () => {
       }
 
       if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+        console.error('Firebase config:', firebaseConfig)
         throw new Error('Firebase configuration is missing')
       }
 
