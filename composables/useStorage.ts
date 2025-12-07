@@ -1,4 +1,4 @@
-import { ref as storageRef, uploadBytes, uploadString, getDownloadURL } from 'firebase/storage'
+import { ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 
 export const useStorage = () => {
   const { storage } = useFirebase()
@@ -34,41 +34,43 @@ export const useStorage = () => {
     const fileRef = storageRef(storage, `profiles/${userId}/${fileName}`)
     
     return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = async (e) => {
-        try {
-          const base64 = e.target?.result as string
-          await uploadString(fileRef, base64, 'data_url')
-          const downloadURL = await getDownloadURL(fileRef)
-          resolve(downloadURL)
-        } catch (error) {
-          reject(error)
+      const uploadTask = uploadBytesResumable(fileRef, file)
+      
+      uploadTask.on('state_changed',
+        () => {},
+        (error) => reject(error),
+        async () => {
+          try {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref)
+            resolve(downloadURL)
+          } catch (error) {
+            reject(error)
+          }
         }
-      }
-      reader.onerror = reject
-      reader.readAsDataURL(file)
+      )
     })
   }
 
   const uploadGalleryPhotos = async (files: File[], userId: string): Promise<string[]> => {
     const uploadPromises = files.map((file, index) => {
       return new Promise<string>((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onload = async (e) => {
-          try {
-            const timestamp = Date.now()
-            const fileName = `gallery_${timestamp}_${index}.jpg`
-            const fileRef = storageRef(storage, `profiles/${userId}/gallery/${fileName}`)
-            const base64 = e.target?.result as string
-            await uploadString(fileRef, base64, 'data_url')
-            const downloadURL = await getDownloadURL(fileRef)
-            resolve(downloadURL)
-          } catch (error) {
-            reject(error)
+        const timestamp = Date.now()
+        const fileName = `gallery_${timestamp}_${index}.jpg`
+        const fileRef = storageRef(storage, `profiles/${userId}/gallery/${fileName}`)
+        const uploadTask = uploadBytesResumable(fileRef, file)
+        
+        uploadTask.on('state_changed',
+          () => {},
+          (error) => reject(error),
+          async () => {
+            try {
+              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref)
+              resolve(downloadURL)
+            } catch (error) {
+              reject(error)
+            }
           }
-        }
-        reader.onerror = reject
-        reader.readAsDataURL(file)
+        )
       })
     })
     
