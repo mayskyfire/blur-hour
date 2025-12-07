@@ -19,13 +19,13 @@
         <PhCamera :size="64" class="text-slate-600 mx-auto mb-4" weight="duotone" />
         <h3 class="text-xl font-bold mb-2">ยังไม่มีรูป Live</h3>
         <p class="text-slate-400 mb-6">เป็นคนแรกที่ถ่ายรูป Live ในร้านนี้!</p>
-        <NuxtLink 
-          to="/profile"
+        <button
+          @click="showCamera = true"
           class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl font-semibold hover:shadow-xl transition-all"
         >
           <PhCamera :size="20" weight="bold" />
           ถ่ายรูป Live
-        </NuxtLink>
+        </button>
       </div>
 
       <!-- Grid -->
@@ -130,6 +130,14 @@
         </div>
       </div>
     </Teleport>
+
+    <!-- Camera Modal -->
+    <LivePhotoCamera 
+      :show="showCamera" 
+      :venue-id="venueId"
+      @close="showCamera = false"
+      @captured="onPhotoCaptured"
+    />
   </div>
 </template>
 
@@ -149,6 +157,7 @@ const livePhotos = ref<LivePhoto[]>([])
 const selectedPhoto = ref<LivePhoto | null>(null)
 const loading = ref(true)
 const profiles = ref<Map<string, Profile>>(new Map())
+const showCamera = ref(false)
 
 const venueId = ref(localStorage.getItem('lastVenueId') || '')
 
@@ -229,5 +238,10 @@ const sendVibeToUser = async (userId: string) => {
     console.error('Error sending vibe:', error)
     alert('ส่ง Vibe ไม่สำเร็จ')
   }
+}
+
+const onPhotoCaptured = () => {
+  showCamera.value = false
+  // Photos will auto-refresh via subscription
 }
 </script>
