@@ -2,7 +2,7 @@
   <div class="min-h-screen p-4 pb-24">
     <!-- Header -->
     <div class="mb-6 text-center">
-      <div class="text-6xl mb-3">🗺️</div>
+      <PhMapPin :size="60" class="text-neonCyan mx-auto mb-3" weight="fill" />
       <h1 class="text-3xl font-bold mb-2">แผนที่บาร์</h1>
       <p class="text-slate-400">ดูว่าโซนไหนมีคนเยอะ</p>
     </div>
@@ -27,13 +27,13 @@
     <div class="relative bg-slate-900/80 rounded-xl border border-slate-700/60 p-6 aspect-square max-w-md mx-auto">
       <!-- DJ Booth -->
       <div class="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-12 bg-neonPink/30 border-2 border-neonPink rounded-lg flex items-center justify-center">
-        <span class="text-2xl">🎧</span>
+        <PhHeadphones :size="24" class="text-neonPink" weight="fill" />
       </div>
 
       <!-- Dance Floor -->
       <div class="absolute top-20 left-1/2 -translate-x-1/2 w-32 h-32 bg-neonCyan/20 border-2 border-neonCyan rounded-xl flex items-center justify-center">
         <div class="text-center">
-          <div class="text-3xl mb-1">💃</div>
+          <PhConfetti :size="32" class="text-neonCyan mb-1" weight="fill" />
           <div class="text-xs font-bold">Dance Floor</div>
           <div class="text-xs text-neonGreen">{{ loading ? '...' : zones.danceFloor }} คน</div>
         </div>
@@ -42,7 +42,7 @@
       <!-- Bar Counter -->
       <div class="absolute bottom-4 left-1/2 -translate-x-1/2 w-40 h-16 bg-neonGold/30 border-2 border-neonGold rounded-lg flex items-center justify-center">
         <div class="text-center">
-          <div class="text-2xl mb-1">🍺</div>
+          <PhBeerBottle :size="24" class="text-neonGold mb-1" weight="fill" />
           <div class="text-xs font-bold">Bar</div>
           <div class="text-xs text-neonGreen">{{ loading ? '...' : zones.bar }} คน</div>
         </div>
@@ -53,7 +53,7 @@
         class="absolute top-1/2 left-4 -translate-y-1/2 w-16 h-24 bg-slate-800/50 border-2 rounded-lg flex items-center justify-center cursor-pointer hover:border-neonCyan transition-all"
         :class="zones.zoneA > 10 ? 'border-neonGreen' : zones.zoneA > 5 ? 'border-yellow-500' : 'border-slate-600'">
         <div class="text-center">
-          <div class="text-xl mb-1">🪑</div>
+          <PhArmchair :size="20" class="mb-1" weight="fill" />
           <div class="text-xs font-bold">Zone A</div>
           <div class="text-xs">{{ loading ? '...' : zones.zoneA }} คน</div>
         </div>
@@ -64,7 +64,7 @@
         class="absolute top-1/2 right-4 -translate-y-1/2 w-16 h-24 bg-slate-800/50 border-2 rounded-lg flex items-center justify-center cursor-pointer hover:border-neonCyan transition-all"
         :class="zones.zoneB > 10 ? 'border-neonGreen' : zones.zoneB > 5 ? 'border-yellow-500' : 'border-slate-600'">
         <div class="text-center">
-          <div class="text-xl mb-1">🪑</div>
+          <PhArmchair :size="20" class="mb-1" weight="fill" />
           <div class="text-xs font-bold">Zone B</div>
           <div class="text-xs">{{ loading ? '...' : zones.zoneB }} คน</div>
         </div>
@@ -75,7 +75,7 @@
         class="absolute top-4 right-4 w-20 h-20 bg-slate-800/50 border-2 rounded-lg flex items-center justify-center cursor-pointer hover:border-neonCyan transition-all"
         :class="zones.outdoor > 10 ? 'border-neonGreen' : zones.outdoor > 5 ? 'border-yellow-500' : 'border-slate-600'">
         <div class="text-center">
-          <div class="text-xl mb-1">🌙</div>
+          <PhMoon :size="20" class="mb-1" weight="fill" />
           <div class="text-xs font-bold">Outdoor</div>
           <div class="text-xs">{{ loading ? '...' : zones.outdoor }} คน</div>
         </div>
@@ -86,7 +86,7 @@
         class="absolute top-4 left-4 w-20 h-20 bg-slate-800/50 border-2 rounded-lg flex items-center justify-center cursor-pointer hover:border-neonCyan transition-all"
         :class="zones.vip > 10 ? 'border-neonGreen' : zones.vip > 5 ? 'border-yellow-500' : 'border-slate-600'">
         <div class="text-center">
-          <div class="text-xl mb-1">👑</div>
+          <PhCrown :size="20" class="text-neonGold mb-1" weight="fill" />
           <div class="text-xs font-bold">VIP</div>
           <div class="text-xs">{{ loading ? '...' : zones.vip }} คน</div>
         </div>
@@ -110,8 +110,8 @@
           <span class="text-sm">{{ selectedZone.currentSong }}</span>
         </div>
         <button @click="goToZone"
-          class="w-full py-3 bg-gradient-to-r from-neonPink to-neonCyan rounded-xl font-semibold mt-4">
-          ไปที่โซนนี้ 🚀
+          class="w-full py-3 bg-gradient-to-r from-neonPink to-neonCyan rounded-xl font-semibold mt-4 flex items-center justify-center gap-2">
+          ไปที่โซนนี้ <PhRocket :size="20" weight="fill" />
         </button>
       </div>
     </div>
@@ -119,12 +119,12 @@
     <!-- Stats -->
     <div class="mt-6 grid grid-cols-2 gap-3">
       <div class="bg-slate-900/80 rounded-xl border border-slate-700/60 p-4 text-center">
-        <div class="text-3xl mb-2">👥</div>
+        <PhUsers :size="32" class="text-neonCyan mx-auto mb-2" weight="fill" />
         <div class="text-2xl font-bold text-neonCyan">{{ totalPeople }}</div>
         <div class="text-xs text-slate-400">คนในบาร์</div>
       </div>
       <div class="bg-slate-900/80 rounded-xl border border-slate-700/60 p-4 text-center">
-        <div class="text-3xl mb-2">🔥</div>
+        <PhFire :size="32" class="text-neonPink mx-auto mb-2" weight="fill" />
         <div class="text-2xl font-bold text-neonPink">{{ hottestZone }}</div>
         <div class="text-xs text-slate-400">โซนที่คึกคักที่สุด</div>
       </div>
@@ -168,10 +168,10 @@ const hottestZone = computed(() => {
 
 const selectZone = (zoneName: string) => {
   const zoneData: any = {
-    'A': { name: 'Zone A', count: zones.value.zoneA, vibe: '🎵 สบายๆ', currentSong: 'ไม่บอกเธอ - Polycat' },
-    'B': { name: 'Zone B', count: zones.value.zoneB, vibe: '💬 คุยกัน', currentSong: 'คนที่คุณรัก - Slot Machine' },
-    'Outdoor': { name: 'Outdoor', count: zones.value.outdoor, vibe: '🌙 ชิลล์', currentSong: 'ขอบคุณที่รัก - Potato' },
-    'VIP': { name: 'VIP', count: zones.value.vip, vibe: '👑 พรีเมี่ยม', currentSong: 'เธอคือ - Singular' }
+    'A': { name: 'Zone A', count: zones.value.zoneA, vibe: 'สบายๆ', currentSong: 'ไม่บอกเธอ - Polycat' },
+    'B': { name: 'Zone B', count: zones.value.zoneB, vibe: 'คุยกัน', currentSong: 'คนที่คุณรัก - Slot Machine' },
+    'Outdoor': { name: 'Outdoor', count: zones.value.outdoor, vibe: 'ชิลล์', currentSong: 'ขอบคุณที่รัก - Potato' },
+    'VIP': { name: 'VIP', count: zones.value.vip, vibe: 'พรีเมี่ยม', currentSong: 'เธอคือ - Singular' }
   }
   selectedZone.value = zoneData[zoneName]
 }

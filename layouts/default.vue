@@ -5,7 +5,7 @@
     >
       <div class="flex items-center justify-between px-4 py-3">
         <NuxtLink to="/" class="flex items-center gap-2">
-          <span class="text-2xl">🍸</span>
+          <PhMartini :size="28" class="text-neonCyan" />
           <span
             class="text-xl font-bold bg-gradient-to-r from-neonCyan to-neonPink bg-clip-text text-transparent"
           >
@@ -28,7 +28,7 @@
               :alt="currentProfile.displayName"
               class="w-full h-full object-cover"
             />
-            <span v-else class="text-lg">👤</span>
+            <PhUser v-else :size="20" weight="bold" class="text-white" />
           </NuxtLink>
         </ClientOnly>
       </div>
@@ -69,7 +69,7 @@
                 : 'text-slate-400 hover:text-slate-300'
             "
           >
-            <span class="text-xl">👥</span>
+            <PhUsers :size="24" weight="fill" />
             <span class="text-xs font-medium">Live</span>
             <span
               v-if="route.path.includes('/live')"
@@ -85,7 +85,7 @@
                 : 'text-slate-400 hover:text-slate-300'
             "
           >
-            <span class="text-xl">🔥</span>
+            <PhFire :size="24" weight="fill" />
             <span class="text-xs font-medium">Swipe</span>
             <span
               v-if="route.path === '/discover'"
@@ -101,7 +101,7 @@
                 : 'text-slate-400 hover:text-slate-300'
             "
           >
-            <span class="text-xl">🗺️</span>
+            <PhMapPin :size="24" weight="fill" />
             <span class="text-xs font-medium">Map</span>
             <span
               v-if="route.path === '/venue-map'"
@@ -117,7 +117,7 @@
                 : 'text-slate-400 hover:text-slate-300'
             "
           >
-            <span class="text-xl">🎮</span>
+            <PhGameController :size="24" weight="fill" />
             <span class="text-xs font-medium">Quest</span>
             <span
               v-if="route.path === '/missions'"
@@ -133,7 +133,7 @@
                 : 'text-slate-400 hover:text-slate-300'
             "
           >
-            <span class="text-xl">💬</span>
+            <PhChatCircle :size="24" weight="fill" />
             <span class="text-xs font-medium">Chat</span>
             <span
               v-if="route.path.startsWith('/chats')"

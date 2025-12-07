@@ -41,7 +41,7 @@
             class="grid grid-cols-3 gap-2"
           >
             <div
-              v-for="(photo, i) in profile.photos.slice(1)"
+              v-for="(photo, i) in profile.photos.slice(1, 7)"
               :key="i"
               class="aspect-square rounded-lg overflow-hidden bg-slate-800 flex items-center justify-center"
             >
@@ -251,6 +251,10 @@ const leaveSession = async () => {
     ...profile.value,
     status: "hidden",
   });
+
+  // Clear localStorage
+  localStorage.removeItem('lastVenueId');
+  localStorage.removeItem('swipedIds');
 
   router.push("/");
 };

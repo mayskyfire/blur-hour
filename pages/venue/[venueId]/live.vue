@@ -52,7 +52,7 @@
               : 'bg-slate-800 text-slate-300',
           ]"
         >
-          📍 {{ zone }}
+          <PhMapPin :size="16" class="inline" weight="fill" /> {{ zone }}
         </button>
       </div>
     </div>
@@ -60,12 +60,12 @@
     <!-- Profiles Grid -->
     <div>
       <div v-if="loading" class="text-center py-8">
-        <div class="text-4xl animate-pulse mb-4">🔍</div>
+        <PhUsers :size="60" class="text-neonCyan animate-pulse mx-auto mb-4" weight="fill" />
         <p class="text-slate-400">กำลังหาคนโสด...</p>
       </div>
 
       <div v-else-if="filteredProfiles.length === 0" class="text-center py-8">
-        <div class="text-6xl mb-4">😴</div>
+        <PhSmiley :size="80" class="text-slate-500 mx-auto mb-4" weight="fill" />
         <h2 class="text-xl font-bold mb-2">ไม่มีใครตรงเงื่อนไข</h2>
         <p class="text-slate-400">ลองเปลี่ยน filter ดูนะ</p>
       </div>
@@ -116,7 +116,7 @@
             <p class="text-sm">
               {{ getMoodEmoji(profile.mood) }} {{ profile.mood }}
             </p>
-            <p class="text-xs text-slate-400">📍 {{ profile.zone }}</p>
+            <p class="text-xs text-slate-400 flex items-center justify-center gap-1"><PhMapPin :size="12" weight="fill" /> {{ profile.zone }}</p>
           </div>
 
           <!-- Personality Tags -->
@@ -139,8 +139,8 @@
               v-if="profile.lineId"
               :href="`https://line.me/ti/p/~${profile.lineId}`"
               target="_blank"
-              class="text-green-400 text-lg hover:scale-110 transition-transform"
-              >📱</a
+              class="hover:scale-110 transition-transform"
+              ><img src="/images/line-icon.png" class="w-5 h-5" /></a
             >
             <a
               v-if="profile.instagram"
@@ -150,14 +150,14 @@
               )}`"
               target="_blank"
               class="text-pink-400 text-lg hover:scale-110 transition-transform"
-              >📸</a
+              ><PhInstagramLogo :size="20" weight="fill" /></a
             >
             <a
               v-if="profile.tiktok"
               :href="`https://tiktok.com/@${profile.tiktok.replace('@', '')}`"
               target="_blank"
               class="text-red-400 text-lg hover:scale-110 transition-transform"
-              >🎵</a
+              ><PhTiktokLogo :size="20" weight="fill" /></a
             >
           </div>
 
@@ -178,7 +178,7 @@
               @click="openSafetyModal(profile.userId)"
               class="p-1.5 bg-slate-700 rounded-lg hover:bg-red-600/20 transition-all text-slate-400 hover:text-red-400 flex-shrink-0"
             >
-              <span class="text-sm">⚠️</span>
+              <PhWarning :size="16" weight="fill" />
             </button>
           </div>
         </div>
@@ -196,7 +196,7 @@
         <div
           class="bg-gradient-to-br from-neonCyan/20 to-neonPink/20 rounded-card border border-neonCyan p-6 text-center space-y-4 max-w-sm"
         >
-          <div class="text-5xl">{{ vibeResult.matched ? "🎉" : "✨" }}</div>
+          <PhHeart :size="60" :class="vibeResult.matched ? 'text-neonPink' : 'text-neonCyan'" class="mx-auto" weight="fill" />
           <h2 class="text-xl font-bold">
             {{ vibeResult.matched ? "Match แล้ว!" : "ส่ง Vibe แล้ว!" }}
           </h2>

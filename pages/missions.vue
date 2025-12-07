@@ -2,7 +2,7 @@
   <div class="min-h-screen p-4 pb-24">
     <!-- Header -->
     <div class="mb-6 text-center">
-      <div class="text-6xl mb-3">🎮</div>
+      <PhGameController :size="80" class="text-neonCyan mx-auto mb-3" weight="fill" />
       <h1 class="text-3xl font-bold mb-2">ภารกิจคืนนี้</h1>
       <p class="text-slate-400">ทำภารกิจให้สำเร็จรับรางวัล!</p>
     </div>
@@ -12,10 +12,10 @@
       <div class="flex items-center justify-between">
         <div>
           <p class="text-sm text-slate-400">คะแนนของคุณ</p>
-          <p class="text-3xl font-bold text-neonCyan">{{ userPoints }} 🌟</p>
+          <p class="text-3xl font-bold text-neonCyan flex items-center gap-2">{{ userPoints }} <PhStar :size="28" weight="fill" class="text-neonGold" /></p>
         </div>
-        <button @click="showRewards = true" class="px-4 py-2 bg-neonGold rounded-lg font-semibold text-black">
-          🎁 รางวัล
+        <button @click="showRewards = true" class="px-4 py-2 bg-neonGold rounded-lg font-semibold text-black flex items-center gap-2">
+          <PhGift :size="20" weight="fill" /> รางวัล
         </button>
       </div>
     </div>
@@ -47,11 +47,11 @@
                   ทำ 50%
                 </button>
                 <button v-if="mission.progress < 100" @click="completeMission(mission.id)"
-                  class="px-3 py-1 bg-neonGreen hover:bg-neonGreen/80 rounded-lg text-xs font-semibold">
-                  ✅ ทำสำเร็จ
+                  class="px-3 py-1 bg-neonGreen hover:bg-neonGreen/80 rounded-lg text-xs font-semibold flex items-center gap-1">
+                  <PhCheck :size="14" weight="bold" /> ทำสำเร็จ
                 </button>
-                <span v-else class="px-3 py-1 bg-neonGreen/20 text-neonGreen rounded-lg text-xs font-semibold">
-                  ✅ สำเร็จแล้ว
+                <span v-else class="px-3 py-1 bg-neonGreen/20 text-neonGreen rounded-lg text-xs font-semibold flex items-center gap-1">
+                  <PhCheck :size="14" weight="bold" /> สำเร็จแล้ว
                 </span>
               </div>
             </div>
@@ -67,7 +67,7 @@
     <div>
       <h2 class="text-xl font-bold mb-3">ภารกิจใหม่</h2>
       <div v-if="loading" class="text-center py-8">
-        <div class="text-4xl animate-pulse mb-2">⏳</div>
+        <PhCircle :size="60" class="text-slate-400 animate-spin mx-auto mb-2" />
         <p class="text-slate-400">กำลังโหลด...</p>
       </div>
       <div v-else-if="availableMissions.length === 0" class="text-center py-8 bg-slate-900/50 rounded-xl">
@@ -82,7 +82,7 @@
               <h3 class="font-bold mb-1">{{ mission.title }}</h3>
               <p class="text-sm text-slate-400 mb-3">{{ mission.description }}</p>
               <div class="flex items-center justify-between">
-                <span class="text-neonGold font-bold">🌟 {{ mission.points }} คะแนน</span>
+                <span class="text-neonGold font-bold flex items-center gap-1"><PhStar :size="16" weight="fill" /> {{ mission.points }} คะแนน</span>
                 <button @click="acceptMission(mission.id)"
                   class="px-4 py-2 bg-gradient-to-r from-neonPink to-neonCyan rounded-lg font-semibold text-sm">
                   รับภารกิจ
@@ -100,7 +100,7 @@
         <div v-if="showSuccessToast" class="fixed top-20 left-4 right-4 z-[200] mx-auto max-w-md">
           <div class="bg-gradient-to-r from-neonGreen/95 to-neonCyan/95 backdrop-blur-md rounded-lg p-4 shadow-lg border border-white/20">
             <div class="flex items-center gap-3">
-              <span class="text-3xl">🎉</span>
+              <PhHeart :size="32" class="text-neonPink" weight="fill" />
               <div class="flex-1">
                 <p class="font-bold text-white">{{ toastMessage }}</p>
               </div>
@@ -119,7 +119,7 @@
         class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-6">
         <div @click.stop class="bg-slate-900 rounded-card border border-neonGold w-full max-w-md max-h-[80vh] overflow-y-auto">
           <div class="p-6 border-b border-slate-700 flex items-center justify-between sticky top-0 bg-slate-900">
-            <h2 class="text-2xl font-bold">🎁 รางวัล</h2>
+            <h2 class="text-2xl font-bold flex items-center gap-2"><PhGift :size="28" weight="fill" class="text-neonGold" /> รางวัล</h2>
             <button @click="showRewards = false" class="text-2xl">×</button>
           </div>
           <div class="p-6 space-y-4">

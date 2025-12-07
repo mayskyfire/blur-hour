@@ -4,12 +4,12 @@
       <h1 class="text-3xl font-bold mb-6">คู่ของคุณ</h1>
 
       <div v-if="loading" class="text-center py-12">
-        <div class="text-4xl animate-pulse mb-4">💬</div>
+        <PhChatCircle :size="60" class="text-neonCyan animate-pulse mx-auto mb-4" weight="fill" />
         <p class="text-slate-400">กำลังโหลดแชท...</p>
       </div>
 
       <div v-else-if="chatsWithProfiles.length === 0" class="text-center py-12">
-        <div class="text-6xl mb-4">💔</div>
+        <PhHeart :size="80" class="text-slate-600 mx-auto mb-4" weight="fill" />
         <h2 class="text-xl font-semibold mb-2">ยังไม่มีคู่</h2>
         <p class="text-slate-400 mb-6">เริ่มสไวป์เพื่อหาคู่ของคุณ!</p>
         <NuxtLink
@@ -52,9 +52,9 @@
             <div class="flex-1">
               <h3 class="font-semibold text-lg">{{ chat.otherProfile?.displayName }}</h3>
               <p class="text-sm text-slate-400">{{ chat.otherProfile?.mood }}</p>
-              <p class="text-xs text-neonCyan">📍 {{ chat.otherProfile?.zone }}</p>
+              <p class="text-xs text-neonCyan flex items-center gap-1"><PhMapPin :size="12" weight="fill" /> {{ chat.otherProfile?.zone }}</p>
             </div>
-            <div class="text-2xl">💬</div>
+            <PhChatCircle :size="28" class="text-neonCyan" weight="fill" />
           </div>
         </NuxtLink>
       </div>

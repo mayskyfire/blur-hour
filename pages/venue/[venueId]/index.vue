@@ -2,7 +2,10 @@
   <div class="min-h-screen">
     <div class="max-w-md mx-auto p-6">
       <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold mb-2">🍸 {{ venueName }}</h1>
+        <div class="flex items-center justify-center gap-2 mb-2">
+          <PhMartini :size="32" class="text-neonCyan" weight="fill" />
+          <h1 class="text-3xl font-bold">{{ venueName }}</h1>
+        </div>
         <p class="text-slate-400">{{ onlineCount }} คนออนไลน์</p>
       </div>
 
@@ -11,21 +14,21 @@
           :to="`/venue/${venueId}/live`"
           class="block w-full py-4 bg-gradient-to-r from-neonPink to-neonCyan rounded-xl text-center font-semibold text-lg shadow-lg hover:shadow-xl transition-all"
         >
-          🔥 เริ่มหาคู่คุย
+          <PhFire :size="20" class="inline" weight="fill" /> เริ่มหาคู่คุย
         </NuxtLink>
 
         <NuxtLink
           to="/chats"
           class="block w-full py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-center font-semibold text-lg hover:bg-slate-700/50 transition-all"
         >
-          💬 แชทของฉัน
+          <PhChatCircle :size="20" class="inline" weight="fill" /> แชทของฉัน
         </NuxtLink>
 
         <NuxtLink
           to="/profile"
           class="block w-full py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-center font-semibold text-lg hover:bg-slate-700/50 transition-all"
         >
-          👤 โปรไฟล์
+          <PhUser :size="20" class="inline" weight="fill" /> โปรไฟล์
         </NuxtLink>
       </div>
     </div>

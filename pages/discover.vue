@@ -3,7 +3,7 @@
     <!-- Stats Bar -->
     <div class="mb-4 p-3 bg-slate-900/80 rounded-xl border border-slate-700/60 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <span class="text-2xl">🍸</span>
+        <PhMartini :size="24" class="text-neonCyan" weight="fill" />
         <div>
           <p class="text-xs text-slate-400">Shot วันนี้</p>
           <p class="text-lg font-bold">{{ todaySwipeCount }}</p>
@@ -25,7 +25,7 @@
       <Transition name="slide-down">
         <div v-if="showZoneToast && selectedZone" class="bg-gradient-to-r from-neonCyan/10 to-neonPink/10 backdrop-blur-md rounded-lg p-3 shadow-lg border border-neonCyan/30 flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="text-sm">📍</span>
+            <PhMapPin :size="16" class="text-neonCyan" weight="fill" />
             <span class="text-sm font-semibold">กำลังดูคนใน {{ selectedZone }}</span>
           </div>
           <button @click="hideZoneToast" class="text-slate-400 hover:text-white text-lg leading-none">
@@ -38,7 +38,7 @@
       <Transition name="slide-down">
         <div v-if="showVibesAlert && receivedVibes.length > 0" class="bg-gradient-to-r from-neonPink/20 to-neonCyan/20 backdrop-blur-md rounded-lg p-3 shadow-lg border border-neonPink/30 flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="text-sm animate-pulse">💖</span>
+            <PhHeart :size="16" class="text-neonPink animate-pulse" weight="fill" />
             <span class="text-sm font-semibold">{{ receivedVibes.length }} คนส่ง vibe ให้คุณ!</span>
           </div>
           <button @click="hideVibesAlert" class="text-slate-400 hover:text-white text-lg leading-none">
@@ -50,7 +50,7 @@
 
     <div v-if="loading" class="h-full flex items-center justify-center">
       <div class="text-center space-y-4">
-        <div class="text-5xl animate-pulse">🔍</div>
+        <PhUsers :size="60" class="text-neonCyan animate-pulse mx-auto" weight="fill" />
         <p class="text-slate-400">กำลังหาคนโสดใกล้ๆ...</p>
       </div>
     </div>
@@ -60,7 +60,7 @@
       class="h-full flex items-center justify-center"
     >
       <div class="text-center space-y-4 max-w-sm">
-        <div class="text-6xl">😴</div>
+        <PhSmiley :size="80" class="text-slate-500 mx-auto" weight="fill" />
         <h2 class="text-2xl font-bold">ยังไม่มีใครอยู่ที่นี่</h2>
         <p class="text-slate-400">เป็นคนแรกหรือกลับมาดูใหม่อีกทีนะ!</p>
       </div>
@@ -84,7 +84,7 @@
           class="bg-gradient-to-br from-neonPink/20 to-neonCyan/20 rounded-card border border-neonCyan p-8 text-center space-y-6 max-w-sm"
           style="animation: ease-in-out 3"
         >
-          <div class="text-7xl">🎉</div>
+          <PhHeart :size="80" class="text-neonPink mx-auto" weight="fill" />
           <h2 class="text-3xl font-bold">จับคู่สำเร็จ!</h2>
           <p class="text-slate-300">คุณทั้งคู่ชอบกัน</p>
           <button
@@ -125,7 +125,7 @@
                   : 'text-slate-400'
               ]"
             >
-              🍸 Shot
+              <PhMartini :size="20" class="inline" weight="fill" /> Shot
             </button>
             <button
               @click="activeTab = 'pass'"
@@ -136,19 +136,19 @@
                   : 'text-slate-400'
               ]"
             >
-              ❌ Pass
+              <PhX :size="20" class="inline" weight="bold" /> Pass
             </button>
           </div>
 
           <!-- Content -->
           <div class="flex-1 overflow-y-auto p-4 space-y-3">
             <div v-if="loadingHistory" class="text-center py-8">
-              <div class="text-4xl animate-pulse mb-2">⏳</div>
+              <PhCircle :size="40" class="text-slate-400 animate-spin mx-auto mb-2" />
               <p class="text-slate-400">กำลังโหลด...</p>
             </div>
 
             <div v-else-if="filteredHistory.length === 0" class="text-center py-8">
-              <div class="text-5xl mb-2">{{ activeTab === 'shot' ? '🍸' : '❌' }}</div>
+              <component :is="activeTab === 'shot' ? 'PhMartini' : 'PhX'" :size="60" class="mx-auto mb-2" :class="activeTab === 'shot' ? 'text-neonCyan' : 'text-neonPink'" weight="fill" />
               <p class="text-slate-400">ยังไม่มีประวัติ</p>
             </div>
 
@@ -190,7 +190,7 @@
                 ]"
               >
                 {{ 
-                  item.matchStatus === 'matched' ? '✓ จับคู่แล้ว' :
+                  item.matchStatus === 'matched' ? 'จับคู่แล้ว' :
                   item.matchStatus === 'pending' ? 'รอ match' :
                   'ไม่ match'
                 }}
@@ -212,7 +212,7 @@ const route = useRoute();
 const { subscribeVenueProfiles, getCurrentProfile } = useProfiles();
 const { handleSwipe: processSwipe, getSwipedProfileIds } =
   useSwipesAndMatches();
-const { subscribeToReceivedVibes } = useVibes();
+const { subscribeReceivedVibes } = useVibes();
 const { getSwipeHistory, getTodaySwipeCount } = useSwipeHistory();
 
 // Get zone filter from query params
@@ -318,7 +318,7 @@ onMounted(async () => {
     )
 
     // Subscribe to received vibes
-    unsubscribeVibes = subscribeToReceivedVibes((vibes) => {
+    unsubscribeVibes = subscribeReceivedVibes((vibes) => {
       receivedVibes.value = vibes.map((v) => v.fromUserId)
     })
 

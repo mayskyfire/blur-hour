@@ -2,7 +2,7 @@
   <div class="min-h-screen p-4 pb-24">
     <!-- Header -->
     <div class="mb-6 text-center">
-      <div class="text-6xl mb-3">🎵</div>
+      <PhMusicNote :size="60" class="text-neonCyan mx-auto mb-3" weight="fill" />
       <h1 class="text-3xl font-bold mb-2">ขอเพลง</h1>
       <p class="text-slate-400">ขอเพลงพร้อมส่งข้อความหวานๆ</p>
     </div>
@@ -37,8 +37,8 @@
       </div>
 
       <button @click="submitRequest" :disabled="!songName || !artist"
-        class="w-full py-4 bg-gradient-to-r from-neonPink to-neonCyan rounded-xl font-semibold text-lg disabled:opacity-50">
-        ส่งคำขอ 🎵
+        class="w-full py-4 bg-gradient-to-r from-neonPink to-neonCyan rounded-xl font-semibold text-lg disabled:opacity-50 flex items-center justify-center gap-2">
+        ส่งคำขอ <PhMusicNote :size="20" weight="fill" />
       </button>
     </div>
 
@@ -52,7 +52,7 @@
         <div v-for="request in myRequests" :key="request.id"
           class="bg-slate-900/80 rounded-xl border border-slate-700/60 p-4">
           <div class="flex items-start gap-3">
-            <div class="text-3xl">🎵</div>
+            <PhMusicNote :size="32" class="text-neonCyan" weight="fill" />
             <div class="flex-1">
               <h3 class="font-bold">{{ request.songName }}</h3>
               <p class="text-sm text-slate-400">{{ request.artist }}</p>
@@ -66,9 +66,9 @@
                 'bg-red-500/20 text-red-400'
               ]">
                 {{ 
-                  request.status === 'approved' ? '✓ อนุมัติ' :
-                  request.status === 'pending' ? '⏳ รอตรวจสอบ' :
-                  '✗ ปฏิเสธ'
+                  request.status === 'approved' ? 'อนุมัติ' :
+                  request.status === 'pending' ? 'รอตรวจสอบ' :
+                  'ปฏิเสธ'
                 }}
               </span>
             </div>
@@ -79,7 +79,7 @@
 
     <!-- Popular Songs -->
     <div>
-      <h2 class="text-xl font-bold mb-3">🔥 เพลงฮิตคืนนี้</h2>
+      <h2 class="text-xl font-bold mb-3 flex items-center gap-2"><PhFire :size="24" class="text-neonPink" weight="fill" /> เพลงฮิตคืนนี้</h2>
       <div class="space-y-2">
         <div v-for="(song, i) in popularSongs" :key="i"
           @click="quickRequest(song)"
@@ -103,7 +103,7 @@
       <div v-if="showSuccess" @click="showSuccess = false"
         class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-6">
         <div class="bg-gradient-to-br from-neonPink/20 to-neonCyan/20 rounded-card border border-neonCyan p-8 text-center space-y-4 max-w-sm">
-          <div class="text-7xl">🎉</div>
+          <PhConfetti :size="70" class="text-neonPink mx-auto" weight="fill" />
           <h2 class="text-2xl font-bold">ส่งคำขอแล้ว!</h2>
           <p class="text-slate-300">รอ DJ ตรวจสอบนะ</p>
           <button @click="showSuccess = false"
@@ -123,11 +123,11 @@ const message = ref('')
 const showSuccess = ref(false)
 
 const messageTemplates = [
-  'เพลงนี้ขอให้คุณ 💕',
-  'ชอบเพลงนี้เหมือนกัน 🎵',
-  'เพลงนี้เพราะมาก ✨',
-  'ขอให้โต๊ะข้างๆ 😉',
-  'เพลงนี้สำหรับคืนนี้ 🌙'
+  'เพลงนี้ขอให้คุณ',
+  'ชอบเพลงนี้เหมือนกัน',
+  'เพลงนี้เพราะมาก',
+  'ขอให้โต๊ะข้างๆ',
+  'เพลงนี้สำหรับคืนนี้'
 ]
 
 const myRequests = ref([
@@ -162,7 +162,7 @@ const submitRequest = () => {
     id: Date.now().toString(),
     songName: songName.value,
     artist: artist.value,
-    message: message.value || 'ขอเพลงนี้หน่อย 🎵',
+    message: message.value || 'ขอเพลงนี้หน่อย',
     status: 'pending'
   })
   

@@ -1,29 +1,38 @@
 <template>
-  <div class="min-h-screen flex flex-col items-center justify-center p-6">
+  <div class="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-b from-night via-night-light to-night">
     <div class="max-w-md w-full space-y-8">
-      <div class="text-center space-y-2">
-        <div class="text-6xl mb-4">🍸</div>
-        <h1 class="text-3xl font-bold">เลือกโหมดของคุณ</h1>
-        <p class="text-slate-400">เพื่อให้คนอื่นเข้าใจคุณได้ง่ายขึ้น</p>
+      <div class="text-center space-y-3">
+        <div class="relative inline-block">
+          <PhHeart :size="80" class="text-neonPink mx-auto animate-pulse" weight="fill" />
+          <PhMartini :size="40" class="text-neonCyan absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" weight="fill" />
+        </div>
+        <h1 class="text-4xl font-bold bg-gradient-to-r from-neonPink via-neonCyan to-neonPink bg-clip-text text-transparent">คุณมาที่นี่เพื่อ?</h1>
+        <p class="text-slate-300 text-lg">เลือกสถานะของคุณคืนนี้</p>
       </div>
 
-      <div class="space-y-3">
+      <div class="space-y-4">
         <button
           v-for="mode in modes"
           :key="mode.value"
           @click="selectMode(mode.value)"
-          class="w-full p-6 rounded-card border-2 transition-all hover:scale-105"
+          class="group relative w-full p-8 rounded-2xl border-2 transition-all duration-300 hover:scale-105 hover:-translate-y-1 overflow-hidden"
           :class="mode.color"
         >
-          <div class="flex items-center gap-4">
-            <div class="text-4xl">{{ mode.emoji }}</div>
-            <div class="text-left flex-1">
-              <div class="font-bold text-lg">{{ mode.label }}</div>
-              <div class="text-sm opacity-80">{{ mode.desc }}</div>
+          <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" :class="mode.bgGlow"></div>
+          <div class="relative flex items-center gap-5">
+            <div class="flex-shrink-0 w-16 h-16 rounded-full flex items-center justify-center" :class="mode.iconBg">
+              <component :is="mode.icon" :size="32" weight="fill" />
             </div>
+            <div class="text-left flex-1">
+              <div class="font-bold text-xl mb-1">{{ mode.label }}</div>
+              <div class="text-sm opacity-90">{{ mode.desc }}</div>
+            </div>
+            <PhCaretRight :size="24" class="opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
           </div>
         </button>
       </div>
+
+      <p class="text-center text-xs text-slate-500 mt-6">สามารถเปลี่ยนสถานะได้ทุกเมื่อในโปรไฟล์</p>
     </div>
   </div>
 </template>
@@ -35,24 +44,30 @@ const router = useRouter()
 const modes = [
   {
     value: 'single',
-    emoji: '✅',
-    label: 'โสด เปิดรับทำความรู้จัก',
-    desc: 'พร้อมพบปะคนใหม่ ๆ',
-    color: 'bg-green-500/10 border-green-500 text-green-400 hover:bg-green-500/20'
+    icon: 'PhHeart',
+    label: 'หาคู่คุย หาแฟน',
+    desc: 'พร้อมพบปะและทำความรู้จักคนใหม่',
+    color: 'bg-neonPink/10 border-neonPink text-neonPink hover:bg-neonPink/20',
+    iconBg: 'bg-neonPink/20',
+    bgGlow: 'bg-gradient-to-r from-neonPink/5 to-transparent'
   },
   {
     value: 'maybe',
-    emoji: '🟡',
-    label: 'คุยเล่นได้ ยังไม่แน่ใจ',
-    desc: 'เปิดกว้าง แต่ไม่หาจริงจัง',
-    color: 'bg-yellow-500/10 border-yellow-500 text-yellow-400 hover:bg-yellow-500/20'
+    icon: 'PhSmiley',
+    label: 'คุยเล่น ไม่จริงจัง',
+    desc: 'เปิดกว้างสำหรับเพื่อนใหม่ แต่ไม่หาอะไรจริงจัง',
+    color: 'bg-neonCyan/10 border-neonCyan text-neonCyan hover:bg-neonCyan/20',
+    iconBg: 'bg-neonCyan/20',
+    bgGlow: 'bg-gradient-to-r from-neonCyan/5 to-transparent'
   },
   {
     value: 'busy',
-    emoji: '🔴',
-    label: 'มาเมา/มาเพื่อน ไม่หาคนคุย',
-    desc: 'ไม่แสดงในรายการ',
-    color: 'bg-red-500/10 border-red-500 text-red-400 hover:bg-red-500/20'
+    icon: 'PhUsers',
+    label: 'มากับเพื่อน ไม่หาคู่',
+    desc: 'แค่มาสนุก ไม่ต้องการแสดงในรายการ',
+    color: 'bg-slate-500/10 border-slate-500 text-slate-400 hover:bg-slate-500/20',
+    iconBg: 'bg-slate-500/20',
+    bgGlow: 'bg-gradient-to-r from-slate-500/5 to-transparent'
   }
 ]
 

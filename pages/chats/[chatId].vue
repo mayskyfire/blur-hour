@@ -7,9 +7,9 @@
       <div class="flex items-center gap-3">
         <button
           @click="router.back()"
-          class="text-2xl text-white hover:text-neonCyan transition-colors p-1"
+          class="text-white hover:text-neonCyan transition-colors p-1"
         >
-          ←
+          <PhCaretLeft :size="24" weight="bold" />
         </button>
         <div
           class="w-10 h-10 rounded-full overflow-hidden border-2 border-white/20"
@@ -45,8 +45,8 @@
           <h2 class="font-semibold text-white text-lg">
             {{ otherProfile?.displayName || "กำลังโหลด..." }}
           </h2>
-          <p class="text-sm text-slate-400">
-            📍 {{ otherProfile?.zone || "ไม่ทราบโซน" }}
+          <p class="text-sm text-slate-400 flex items-center gap-1">
+            <PhMapPin :size="14" weight="fill" /> {{ otherProfile?.zone || "ไม่ทราบโซน" }}
           </p>
         </div>
       </div>
@@ -95,7 +95,7 @@
 
     <!-- Input -->
     <div
-      class="bg-slate-900/90 backdrop-blur-xl border-t border-slate-700/60 p-4 fixed bottom-[76px] left-0 right-0 z-10"
+      class="bg-slate-900/90 backdrop-blur-xl border-t border-slate-700/60 p-4 fixed bottom-[70px] left-0 right-0 z-10"
     >
       <div class="mb-2">
         <IcebreakerButton @select="insertQuestion" />
@@ -113,7 +113,7 @@
           :disabled="!newMessage.trim()"
           class="px-6 py-3 bg-gradient-to-r from-neonPink to-neonCyan rounded-xl font-semibold text-white shadow-lg disabled:opacity-50 disabled:shadow-none hover:shadow-xl transition-all"
         >
-          ส่ง
+          <PhPaperPlaneRight :size="20" weight="fill" />
         </button>
       </form>
     </div>

@@ -22,7 +22,7 @@
                 class="w-full h-full rounded-full border-2 border-dashed border-slate-700 flex items-center justify-center text-slate-500 hover:border-neonCyan hover:text-neonCyan transition-colors bg-slate-800"
               >
                 <div class="text-center">
-                  <div class="text-3xl mb-1">📷</div>
+                  <PhCamera :size="32" class="text-slate-500 mb-1" weight="fill" />
                   <div class="text-xs">เพิ่มรูป</div>
                 </div>
               </button>
@@ -30,7 +30,7 @@
                 v-if="form.profilePhoto"
                 type="button" 
                 @click="form.profilePhoto = ''; profilePhotoInput!.value = ''" 
-                class="absolute -top-2 -right-2 w-8 h-8 bg-red-500 rounded-full text-white flex items-center justify-center hover:bg-red-600"
+                class="absolute -top-2 -right-2 w-8 h-8 bg-red-500 rounded-full text-white text-xl font-bold flex items-center justify-center hover:bg-red-600 leading-none"
               >
                 ×
               </button>
@@ -38,9 +38,9 @@
                 v-if="form.profilePhoto"
                 type="button" 
                 @click="profilePhotoInput?.click()" 
-                class="absolute -bottom-2 -right-2 w-8 h-8 bg-neonCyan rounded-full text-white flex items-center justify-center hover:bg-neonCyan/80"
+                class="absolute -bottom-2 -right-2 w-8 h-8 bg-neonCyan rounded-full flex items-center justify-center hover:bg-neonCyan/80"
               >
-                ✏️
+                <PhPencil :size="16" class="text-night" weight="bold" />
               </button>
             </div>
           </div>
@@ -123,7 +123,7 @@
           >
             <option value="">เลือกโซน</option>
             <option v-for="zone in ZONES" :key="zone" :value="zone">
-              📍 {{ zone }}
+              {{ zone }}
             </option>
           </select>
         </div>
@@ -171,20 +171,20 @@
 
         <!-- Photos Gallery -->
         <div>
-          <label class="block text-sm text-slate-400 mb-2">แกลเลอรี่ (อัปโหลดได้ 3 รูป)</label>
+          <label class="block text-sm text-slate-400 mb-2">แกลเลอรี่ (อัปโหลดได้ 6 รูป)</label>
           <div class="grid grid-cols-3 gap-2">
             <div v-for="(photo, i) in form.galleryPhotos" :key="i" class="relative aspect-square rounded-xl overflow-hidden bg-slate-800">
               <img :src="photo" class="w-full h-full object-cover" />
-              <button type="button" @click="removeGalleryPhoto(i)" class="absolute top-1 right-1 w-6 h-6 bg-red-500 rounded-full text-white text-xs flex items-center justify-center">×</button>
+              <button type="button" @click="removeGalleryPhoto(i)" class="absolute top-1 right-1 w-6 h-6 bg-red-500 rounded-full text-white text-sm font-bold flex items-center justify-center hover:bg-red-600 leading-none">×</button>
             </div>
             <button 
-              v-if="form.galleryPhotos.length < 3" 
+              v-if="form.galleryPhotos.length < 6" 
               type="button" 
               @click="galleryPhotoInput?.click()" 
               class="aspect-square rounded-xl border-2 border-dashed border-slate-700 flex items-center justify-center text-slate-500 hover:border-neonCyan hover:text-neonCyan transition-colors"
             >
               <div class="text-center">
-                <div class="text-2xl mb-1">📷</div>
+                <PhCamera :size="24" class="text-slate-500 mb-1" weight="fill" />
                 <div class="text-xs">เพิ่มรูป</div>
               </div>
             </button>
@@ -197,7 +197,7 @@
           <label class="block text-sm text-slate-400 mb-2">โซเชียลมีเดีย (เลือกได้)</label>
           <div class="space-y-3">
             <div class="relative">
-              <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-400">📱</div>
+              <div class="absolute left-3 top-1/2 transform -translate-y-1/2"><img src="/images/line-icon.png" class="w-5 h-5" /></div>
               <input 
                 v-model="form.lineId" 
                 type="text" 
@@ -206,7 +206,7 @@
               />
             </div>
             <div class="relative">
-              <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-pink-400">📸</div>
+              <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-pink-400"><PhInstagramLogo :size="20" weight="fill" /></div>
               <input 
                 v-model="form.instagram" 
                 type="text" 
@@ -215,11 +215,20 @@
               />
             </div>
             <div class="relative">
-              <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-red-400">🎵</div>
+              <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-red-400"><PhTiktokLogo :size="20" weight="fill" /></div>
               <input 
                 v-model="form.tiktok" 
                 type="text" 
                 placeholder="TikTok @username" 
+                class="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-neonCyan" 
+              />
+            </div>
+            <div class="relative">
+              <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-300"><PhTwitterLogo :size="20" weight="fill" /></div>
+              <input 
+                v-model="form.x" 
+                type="text" 
+                placeholder="X (Twitter) @username" 
                 class="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-neonCyan" 
               />
             </div>
@@ -231,7 +240,8 @@
           :disabled="loading"
           class="w-full py-4 bg-gradient-to-r from-neonPink to-neonCyan rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50"
         >
-          {{ loading ? 'กำลังสร้าง...' : 'เริ่มใช้งาน 🚀' }}
+          <span v-if="loading">กำลังสร้าง...</span>
+          <span v-else class="flex items-center justify-center gap-2">เริ่มใช้งาน <PhCaretRight :size="20" weight="bold" /></span>
         </button>
       </form>
     </div>
@@ -296,7 +306,7 @@ const handleGalleryPhotoUpload = (event: Event) => {
 
   uploadingPhotos.value = true
   Array.from(files).forEach(file => {
-    if (form.galleryPhotos.length >= 3) return
+    if (form.galleryPhotos.length >= 6) return
     const reader = new FileReader()
     reader.onload = (e) => {
       form.galleryPhotos.push(e.target?.result as string)
@@ -333,6 +343,7 @@ const submitProfile = async () => {
     if (form.lineId) profileData.lineId = form.lineId
     if (form.instagram) profileData.instagram = form.instagram
     if (form.tiktok) profileData.tiktok = form.tiktok
+    if (form.x) profileData.x = form.x
 
     await createOrUpdateProfile(profileData)
     
@@ -369,6 +380,7 @@ onMounted(async () => {
     form.lineId = existingProfile.lineId || ''
     form.instagram = existingProfile.instagram || ''
     form.tiktok = existingProfile.tiktok || ''
+    form.x = existingProfile.x || ''
   }
 })
 </script>

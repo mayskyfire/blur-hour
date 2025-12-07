@@ -1,9 +1,17 @@
 <template>
   <div class="min-h-screen flex flex-col items-center justify-center p-6">
+    <!-- Loading Overlay -->
+    <div v-if="loading" class="fixed inset-0 bg-night z-50 flex items-center justify-center">
+      <div class="text-center space-y-4">
+        <PhMartini :size="80" class="text-neonCyan mx-auto animate-pulse" weight="fill" />
+        <p class="text-slate-400">กำลังโหลด...</p>
+      </div>
+    </div>
+
     <div class="max-w-md w-full space-y-8">
       <!-- Branding -->
       <div class="text-center space-y-4">
-        <div class="text-7xl mb-4">🍸</div>
+        <PhMartini :size="80" class="text-neonCyan mx-auto mb-4" weight="fill" />
         <h1 class="text-5xl font-bold">
           <span class="bg-gradient-to-r from-neonCyan to-neonPink bg-clip-text text-transparent">Blur Hour</span>
         </h1>
@@ -29,15 +37,15 @@
           :disabled="!venueCode"
           class="w-full py-4 bg-gradient-to-r from-neonPink to-neonCyan rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          เริ่มใช้งาน 🚀
+          เริ่มใช้งาน
         </button>
       </div>
 
       <!-- Quick Info -->
       <div class="text-center text-sm text-slate-400 space-y-2">
-        <p>🔥 สไวป์หาคนโสด</p>
-        <p>💬 จับคู่และแชทคืนนี้</p>
-        <p>✨ ความสัมพันธ์ชั่วคราว</p>
+        <p class="flex items-center justify-center gap-2"><PhFire :size="20" weight="fill" /> สไวป์หาคนโสด</p>
+        <p class="flex items-center justify-center gap-2"><PhChatCircle :size="20" weight="fill" /> จับคู่และแชทคืนนี้</p>
+        <p class="flex items-center justify-center gap-2"><PhStar :size="20" weight="fill" /> ความสัมพันธ์ชั่วคราว</p>
       </div>
     </div>
   </div>
@@ -49,6 +57,7 @@ const router = useRouter()
 const { signIn } = useAuth()
 
 const venueCode = ref('')
+const loading = ref(true)
 
 onMounted(async () => {
   // Auto sign in anonymously
@@ -58,15 +67,16 @@ onMounted(async () => {
   if (route.query.venueId) {
     venueCode.value = route.query.venueId as string
     localStorage.setItem('lastVenueId', venueCode.value)
+    loading.value = false
   } else {
     // Check localStorage for previous venue
     const savedVenueId = localStorage.getItem('lastVenueId')
     if (savedVenueId) {
-      venueCode.value = savedVenueId
       // Redirect to venue page if user was already in a venue
       router.push(`/venue/${savedVenueId}`)
       return
     }
+    loading.value = false
   }
 })
 

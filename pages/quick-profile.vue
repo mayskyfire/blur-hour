@@ -8,21 +8,49 @@
       </div>
 
       <form @submit.prevent="submitProfile" class="space-y-5">
-        <!-- Avatar/Emoji Selector -->
+        <!-- Profile Photo -->
         <div>
-          <label class="block text-sm text-slate-400 mb-2">เลือก Avatar</label>
-          <div class="grid grid-cols-5 gap-2">
-            <button
-              v-for="avatar in avatars"
-              :key="avatar"
-              type="button"
-              @click="form.avatar = avatar"
-              class="aspect-square rounded-xl border-2 text-4xl flex items-center justify-center transition-all"
-              :class="form.avatar === avatar ? 'border-neonCyan bg-neonCyan/20 scale-110' : 'border-slate-700 bg-slate-800/50'"
-            >
-              {{ avatar }}
+          <label class="block text-sm text-slate-400 mb-2">รูปโปรไฟล์</label>
+          <div class="flex items-center gap-4">
+            <div class="relative w-24 h-24 rounded-xl overflow-hidden bg-slate-800">
+              <img v-if="form.profilePhoto" :src="form.profilePhoto" class="w-full h-full object-cover" />
+              <div v-else class="w-full h-full flex items-center justify-center text-slate-500 text-3xl">+</div>
+            </div>
+            <div class="flex-1 space-y-2">
+              <button type="button" @click="profilePhotoInput?.click()" class="w-full px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-xl text-sm hover:border-neonCyan transition-colors">
+                อัพโหลดรูป
+              </button>
+              <input ref="profilePhotoInput" type="file" accept="image/*" @change="handleProfilePhotoUpload" class="hidden" />
+              <p class="text-xs text-slate-500">หรือเลือก Avatar</p>
+              <div class="grid grid-cols-5 gap-1">
+                <button
+                  v-for="avatar in avatars.slice(0, 5)"
+                  :key="avatar"
+                  type="button"
+                  @click="form.profilePhoto = avatar"
+                  class="aspect-square rounded-lg border text-xl flex items-center justify-center transition-all hover:border-neonCyan"
+                  :class="form.profilePhoto === avatar ? 'border-neonCyan bg-neonCyan/20' : 'border-slate-700 bg-slate-800/50'"
+                >
+                  {{ avatar }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gallery Photos -->
+        <div>
+          <label class="block text-sm text-slate-400 mb-2">รูป Gallery (สูงสุด 6 รูป)</label>
+          <div class="grid grid-cols-3 gap-2">
+            <div v-for="(photo, i) in form.galleryPhotos" :key="i" class="relative aspect-square rounded-xl overflow-hidden bg-slate-800">
+              <img :src="photo" class="w-full h-full object-cover" />
+              <button type="button" @click="removeGalleryPhoto(i)" class="absolute top-1 right-1 w-6 h-6 bg-red-500 rounded-full text-white text-sm font-bold flex items-center justify-center hover:bg-red-600 leading-none">×</button>
+            </div>
+            <button v-if="form.galleryPhotos && form.galleryPhotos.length < 6" type="button" @click="galleryPhotoInput?.click()" class="aspect-square rounded-xl border-2 border-dashed border-slate-700 flex items-center justify-center text-slate-500 hover:border-neonCyan hover:text-neonCyan transition-colors">
+              <span class="text-3xl">+</span>
             </button>
           </div>
+          <input ref="galleryPhotoInput" type="file" accept="image/*" multiple @change="handleGalleryPhotoUpload" class="hidden" />
         </div>
 
         <!-- Nickname -->
@@ -120,12 +148,56 @@
           </div>
         </div>
 
+        <!-- Social Accounts -->
+        <div>
+          <label class="block text-sm text-slate-400 mb-2">โซเชียลมีเดีย (เลือกได้)</label>
+          <div class="space-y-3">
+            <div class="relative">
+              <div class="absolute left-3 top-1/2 transform -translate-y-1/2"><img src="/images/line-icon.png" class="w-5 h-5" /></div>
+              <input 
+                v-model="form.lineId" 
+                type="text" 
+                placeholder="Line ID" 
+                class="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-neonCyan" 
+              />
+            </div>
+            <div class="relative">
+              <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-pink-400"><PhInstagramLogo :size="20" weight="fill" /></div>
+              <input 
+                v-model="form.instagram" 
+                type="text" 
+                placeholder="Instagram @username" 
+                class="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-neonCyan" 
+              />
+            </div>
+            <div class="relative">
+              <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-red-400"><PhTiktokLogo :size="20" weight="fill" /></div>
+              <input 
+                v-model="form.tiktok" 
+                type="text" 
+                placeholder="TikTok @username" 
+                class="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-neonCyan" 
+              />
+            </div>
+            <div class="relative">
+              <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-300"><PhTwitterLogo :size="20" weight="fill" /></div>
+              <input 
+                v-model="form.x" 
+                type="text" 
+                placeholder="X (Twitter) @username" 
+                class="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-neonCyan" 
+              />
+            </div>
+          </div>
+        </div>
+
         <button
           type="submit"
           :disabled="loading || !isValid"
           class="w-full py-4 bg-gradient-to-r from-neonPink to-neonCyan rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all disabled:opacity-50"
         >
-          {{ loading ? 'กำลังสร้าง...' : 'เริ่มใช้งาน 🚀' }}
+          <span v-if="loading">กำลังสร้าง...</span>
+          <span v-else class="flex items-center justify-center gap-2">เริ่มใช้งาน <PhCaretRight :size="20" weight="bold" /></span>
         </button>
       </form>
     </div>
@@ -140,14 +212,22 @@ const { createOrUpdateProfile } = useProfiles()
 const loading = ref(false)
 
 const form = reactive({
-  avatar: '😎',
   displayName: '',
   age: 25,
   gender: 'male' as 'male' | 'female' | 'other',
   tags: [] as string[],
   personalityTags: [] as string[],
-  lookingFor: 'เพื่อนกินดื่ม'
+  lookingFor: 'เพื่อนกินดื่ม',
+  profilePhoto: '',
+  galleryPhotos: [] as string[],
+  lineId: '',
+  instagram: '',
+  tiktok: '',
+  x: ''
 })
+
+const profilePhotoInput = ref<HTMLInputElement>()
+const galleryPhotoInput = ref<HTMLInputElement>()
 
 const avatars = ['😎', '🤩', '😊', '🥳', '😏', '🤗', '😇', '🥰', '😜', '🤪', '🔥', '✨', '💫', '⭐', '🌟']
 
@@ -171,8 +251,39 @@ const personalityTags = [
 const lookingForOptions = ['เพื่อนกินดื่ม', 'คนคุย', 'สายเต้น', 'สายเล่นเกม']
 
 const isValid = computed(() => {
-  return form.displayName && form.age >= 18 && (form.tags.length > 0 || form.personalityTags.length > 0)
+  return form.displayName && form.age >= 18 && form.profilePhoto && (form.tags.length > 0 || form.personalityTags.length > 0)
 })
+
+const handleProfilePhotoUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (!file) return
+
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    form.profilePhoto = e.target?.result as string
+  }
+  reader.readAsDataURL(file)
+}
+
+const handleGalleryPhotoUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const files = target.files
+  if (!files) return
+
+  Array.from(files).forEach(file => {
+    if (form.galleryPhotos.length >= 6) return
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      form.galleryPhotos.push(e.target?.result as string)
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
+const removeGalleryPhoto = (index: number) => {
+  form.galleryPhotos.splice(index, 1)
+}
 
 const toggleTag = (tag: string) => {
   const index = form.tags.indexOf(tag)
@@ -209,6 +320,8 @@ const submitProfile = async () => {
                     form.age < 38 ? '33-37' : 
                     form.age < 43 ? '38-42' : '43+'
 
+    const photos = [form.profilePhoto, ...form.galleryPhotos]
+
     const profileData: any = {
       venueId,
       displayName: form.displayName,
@@ -219,8 +332,13 @@ const submitProfile = async () => {
       personalityTags: form.personalityTags.length > 0 ? form.personalityTags : form.tags,
       activityStatus: 'พร้อมคุยเลย',
       status,
-      photos: [form.avatar]
+      photos
     }
+
+    if (form.lineId) profileData.lineId = form.lineId
+    if (form.instagram) profileData.instagram = form.instagram
+    if (form.tiktok) profileData.tiktok = form.tiktok
+    if (form.x) profileData.x = form.x
 
     await createOrUpdateProfile(profileData)
 
@@ -251,8 +369,14 @@ onMounted(async () => {
     form.tags = existingProfile.personalityTags || []
     
     if (existingProfile.photos && existingProfile.photos.length > 0) {
-      form.avatar = existingProfile.photos[0]
+      form.profilePhoto = existingProfile.photos[0]
+      form.galleryPhotos = existingProfile.photos.slice(1)
     }
+    
+    form.lineId = existingProfile.lineId || ''
+    form.instagram = existingProfile.instagram || ''
+    form.tiktok = existingProfile.tiktok || ''
+    form.x = existingProfile.x || ''
   }
 })
 </script>
