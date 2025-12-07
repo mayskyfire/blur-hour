@@ -305,33 +305,57 @@ const togglePersonalityTag = (tag: string) => {
   }
 }
 
-const handleProfilePhotoUpload = (event: Event) => {
+const handleProfilePhotoUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
   if (!file) return
 
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    form.profilePhoto = e.target?.result as string
+  try {
+    const { uploadProfilePhoto } = useStorage()
+    const { currentUser } = useAuth()
+    if (!currentUser.value) return
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      form.profilePhoto = e.target?.result as string
+    }
+    reader.readAsDataURL(file)
+
+    const downloadURL = await uploadProfilePhoto(file, currentUser.value.uid)
+    form.profilePhoto = downloadURL
+  } catch (error) {
+    console.error('Profile photo upload error:', error)
   }
-  reader.readAsDataURL(file)
 }
 
-const handleGalleryPhotoUpload = (event: Event) => {
+const handleGalleryPhotoUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement
   const files = target.files
   if (!files) return
 
-  uploadingPhotos.value = true
-  Array.from(files).forEach(file => {
-    if (form.galleryPhotos.length >= 6) return
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      form.galleryPhotos.push(e.target?.result as string)
-      uploadingPhotos.value = false
-    }
-    reader.readAsDataURL(file)
-  })
+  try {
+    uploadingPhotos.value = true
+    const { uploadGalleryPhotos } = useStorage()
+    const { currentUser } = useAuth()
+    if (!currentUser.value) return
+
+    const filesToUpload = Array.from(files).slice(0, 6 - form.galleryPhotos.length)
+    
+    filesToUpload.forEach(file => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        form.galleryPhotos.push(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    })
+
+    const downloadURLs = await uploadGalleryPhotos(filesToUpload, currentUser.value.uid)
+    form.galleryPhotos = form.galleryPhotos.filter(p => p.startsWith('http')).concat(downloadURLs)
+  } catch (error) {
+    console.error('Gallery photos upload error:', error)
+  } finally {
+    uploadingPhotos.value = false
+  }
 }
 
 const removeGalleryPhoto = (index: number) => {
