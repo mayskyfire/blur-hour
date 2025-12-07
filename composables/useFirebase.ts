@@ -17,36 +17,13 @@ export const useFirebase = () => {
 
   if (!initialized) {
     try {
-      const config = useRuntimeConfig()
-      
-      // Debug: Log environment variables
-      console.log('Runtime config public keys:', Object.keys(config.public))
-      console.log('Firebase API Key:', config.public.firebaseApiKey ? 'EXISTS' : 'MISSING')
-      console.log('Firebase Project ID:', config.public.firebaseProjectId ? 'EXISTS' : 'MISSING')
-      console.log('Env check:', {
-        apiKey: config.public.firebaseApiKey?.substring(0, 10) + '...',
-        projectId: config.public.firebaseProjectId
-      })
-      
       const firebaseConfig = {
-        apiKey: config.public.firebaseApiKey,
-        authDomain: config.public.firebaseAuthDomain,
-        projectId: config.public.firebaseProjectId,
-        storageBucket: config.public.firebaseStorageBucket,
-        messagingSenderId: config.public.firebaseMessagingSenderId,
-        appId: config.public.firebaseAppId
-      }
-
-      if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-        console.error('Firebase config missing! Config:', {
-          hasApiKey: !!firebaseConfig.apiKey,
-          hasAuthDomain: !!firebaseConfig.authDomain,
-          hasProjectId: !!firebaseConfig.projectId,
-          hasStorageBucket: !!firebaseConfig.storageBucket,
-          hasMessagingSenderId: !!firebaseConfig.messagingSenderId,
-          hasAppId: !!firebaseConfig.appId
-        })
-        throw new Error('Firebase configuration is missing')
+        apiKey: 'AIzaSyCsD29ycdQ22Vs1k5MEuyY850wjrLvTRbw',
+        authDomain: 'blur-hour.firebaseapp.com',
+        projectId: 'blur-hour',
+        storageBucket: 'blur-hour.firebasestorage.com',
+        messagingSenderId: '812200063590',
+        appId: '1:812200063590:web:16e67cb708fd020d9ef3a7'
       }
 
       firebaseApp = initializeApp(firebaseConfig)
