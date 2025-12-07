@@ -2,7 +2,7 @@
     email your-email@example.com
 }
 
-your-domain.com {
+blurhour.metalabsoft.com {
     reverse_proxy app:3000
     
     encode gzip
