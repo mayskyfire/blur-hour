@@ -17,5 +17,16 @@ export const useStorage = () => {
     return downloadURL
   }
 
-  return { uploadChatImage }
+  const uploadLivePhoto = async (blob: Blob, userId: string): Promise<string> => {
+    const timestamp = Date.now()
+    const fileName = `live_${userId}_${timestamp}.jpg`
+    const fileRef = storageRef(storage, `livePhotos/${userId}/${fileName}`)
+    
+    await uploadBytes(fileRef, blob)
+    const downloadURL = await getDownloadURL(fileRef)
+    
+    return downloadURL
+  }
+
+  return { uploadChatImage, uploadLivePhoto }
 }

@@ -5,6 +5,7 @@ A Progressive Web App for finding singles in bars and clubs. Built with Nuxt 4, 
 ## 🎯 Features
 
 - **Shot or Not Swipe**: Tinder-style swipe interface with custom "Shot" interaction
+- **Live Photo Feed**: Capture and share real-time photos in the venue with 6-hour expiry
 - **Real-time Matching**: Instant matches when both users swipe right
 - **Ephemeral Chat**: Messages expire after 6 hours for privacy
 - **Venue-based**: Users only see others in the same venue
@@ -23,20 +24,24 @@ A Progressive Web App for finding singles in bars and clubs. Built with Nuxt 4, 
 ```
 blur-hour/
 ├── components/
-│   └── swipe/
-│       ├── ShotOrNotSwipe.vue    # Main swipe component
-│       └── ProfileCard.vue        # Profile display card
+│   ├── swipe/
+│   │   ├── ShotOrNotSwipe.vue    # Main swipe component
+│   │   └── ProfileCard.vue        # Profile display card
+│   └── LivePhotoCamera.vue        # Camera for live photos
 ├── composables/
 │   ├── useFirebase.ts             # Firebase initialization
 │   ├── useAuth.ts                 # Authentication logic
 │   ├── useProfiles.ts             # Profile CRUD operations
 │   ├── useSwipesAndMatches.ts     # Swipe and match logic
-│   └── useChats.ts                # Chat messaging
+│   ├── useChats.ts                # Chat messaging
+│   ├── useLivePhotos.ts           # Live photo management
+│   └── useStorage.ts              # Firebase Storage
 ├── pages/
 │   ├── index.vue                  # Landing/venue selection
 │   ├── onboarding.vue             # Profile creation
 │   ├── discover.vue               # Swipe interface
 │   ├── profile.vue                # User profile
+│   ├── live-feed.vue              # Live photo feed
 │   └── chats/
 │       ├── index.vue              # Match list
 │       └── [chatId].vue           # Chat room
@@ -262,6 +267,16 @@ firebase deploy
 - `text` (string)
 - `createdAt` (timestamp)
 - `expiresAt` (timestamp)
+
+**livePhotos**
+- `userId` (string)
+- `venueId` (string)
+- `photoUrl` (string)
+- `capturedAt` (timestamp)
+- `expiresAt` (timestamp) - 6 hours from capture
+- `likes` (number)
+- `likedBy` (array)
+- `viewers` (array)
 
 ## 🛠️ Troubleshooting
 

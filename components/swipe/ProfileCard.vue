@@ -7,6 +7,14 @@
       class="absolute inset-0 bg-gradient-to-br from-neonCyan/10 via-transparent to-neonPink/10"
     />
 
+    <!-- Live Badge -->
+    <div v-if="profile.livePhotoUrl" class="absolute top-4 left-4 z-10">
+      <div class="bg-red-500 rounded-full px-3 py-1 text-sm font-bold text-white shadow-lg flex items-center gap-1 animate-pulse">
+        <span class="w-2 h-2 bg-white rounded-full"></span>
+        LIVE
+      </div>
+    </div>
+
     <!-- Vibe Indicator -->
     <div v-if="hasVibeFromUser" class="absolute top-4 right-4 z-10">
       <div
@@ -22,10 +30,17 @@
           <!-- Profile Photo -->
           <div class="flex justify-center mb-4">
             <div
-              class="w-24 h-24 rounded-full overflow-hidden border-4 border-white/20"
+              class="w-24 h-24 rounded-full overflow-hidden border-4"
+              :class="profile.livePhotoUrl ? 'border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.5)]' : 'border-white/20'"
             >
               <img
-                v-if="
+                v-if="profile.livePhotoUrl"
+                :src="profile.livePhotoUrl"
+                :alt="profile.displayName"
+                class="w-full h-full object-cover"
+              />
+              <img
+                v-else-if="
                   profile.photos?.[0] &&
                   (profile.photos[0].startsWith('data:') ||
                     profile.photos[0].startsWith('http'))
@@ -41,6 +56,11 @@
                 {{ profile.displayName.charAt(0) }}
               </div>
             </div>
+          </div>
+          
+          <!-- Live Photo Timestamp -->
+          <div v-if="profile.livePhotoUrl && profile.livePhotoCapturedAt" class="text-center -mt-2 mb-2">
+            <p class="text-xs text-red-400">ถ่ายเมื่อ {{ getTimeAgo(profile.livePhotoCapturedAt) }}</p>
           </div>
 
           <div>
@@ -306,5 +326,17 @@ const getActivityStatusEmoji = (status: string): string => {
 const getPersonalityTagEmoji = (tag: string): string => {
   const tagObj = PERSONALITY_TAGS.find((t) => t.value === tag);
   return tagObj?.emoji || "✨";
+};
+
+const getTimeAgo = (timestamp: any) => {
+  if (!timestamp) return '';
+  const date = timestamp instanceof Date ? timestamp : (timestamp.toDate ? timestamp.toDate() : new Date(timestamp));
+  const now = new Date();
+  const diff = Math.floor((now.getTime() - date.getTime()) / 1000 / 60);
+  
+  if (diff < 1) return 'เพิ่งกี้';
+  if (diff < 60) return `${diff} นาทีที่แล้ว`;
+  const hours = Math.floor(diff / 60);
+  return `${hours} ชั่วโมงที่แล้ว`;
 };
 </script>

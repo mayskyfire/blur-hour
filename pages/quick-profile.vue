@@ -16,24 +16,11 @@
               <img v-if="form.profilePhoto" :src="form.profilePhoto" class="w-full h-full object-cover" />
               <div v-else class="w-full h-full flex items-center justify-center text-slate-500 text-3xl">+</div>
             </div>
-            <div class="flex-1 space-y-2">
+            <div class="flex-1">
               <button type="button" @click="profilePhotoInput?.click()" class="w-full px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-xl text-sm hover:border-neonCyan transition-colors">
                 อัพโหลดรูป
               </button>
               <input ref="profilePhotoInput" type="file" accept="image/*" @change="handleProfilePhotoUpload" class="hidden" />
-              <p class="text-xs text-slate-500">หรือเลือก Avatar</p>
-              <div class="grid grid-cols-5 gap-1">
-                <button
-                  v-for="avatar in avatars.slice(0, 5)"
-                  :key="avatar"
-                  type="button"
-                  @click="form.profilePhoto = avatar"
-                  class="aspect-square rounded-lg border text-xl flex items-center justify-center transition-all hover:border-neonCyan"
-                  :class="form.profilePhoto === avatar ? 'border-neonCyan bg-neonCyan/20' : 'border-slate-700 bg-slate-800/50'"
-                >
-                  {{ avatar }}
-                </button>
-              </div>
             </div>
           </div>
         </div>

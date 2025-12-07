@@ -14,6 +14,9 @@ export interface Profile {
   status: 'single' | 'busy' | 'hidden'
   activityStatus: 'พร้อมคุยเลย' | 'กำลังเต้น' | 'กำลังร้องเพลง' | 'offline'
   photos: string[]
+  livePhotoId?: string
+  livePhotoUrl?: string
+  livePhotoCapturedAt?: Timestamp | Date
   lineId?: string
   instagram?: string
   tiktok?: string
@@ -151,6 +154,18 @@ export interface SongRequest {
   toTable?: string
   approved: boolean
   createdAt: Timestamp | Date
+}
+
+export interface LivePhoto {
+  id: string
+  userId: string
+  venueId: string
+  photoUrl: string
+  capturedAt: Timestamp | Date
+  expiresAt: Timestamp | Date
+  likes: number
+  likedBy: string[]
+  viewers: string[]
 }
 
 export const MOODS = [

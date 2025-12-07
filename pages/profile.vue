@@ -166,8 +166,34 @@
           </div>
         </div>
 
+        <!-- Live Photo -->
+        <div v-if="profile.livePhotoUrl" class="bg-slate-900/80 backdrop-blur-xl rounded-xl border border-red-500/50 p-4">
+          <div class="flex items-center gap-3">
+            <div class="relative w-16 h-16 rounded-full overflow-hidden">
+              <img :src="profile.livePhotoUrl" class="w-full h-full object-cover" />
+              <div class="absolute inset-0 border-2 border-red-500 rounded-full animate-pulse"></div>
+            </div>
+            <div class="flex-1">
+              <p class="font-semibold flex items-center gap-2">
+                <span class="text-red-500">🔴</span> LIVE
+              </p>
+              <p class="text-xs text-slate-400">ถ่ายเมื่อ {{ getTimeAgo(profile.livePhotoCapturedAt) }}</p>
+            </div>
+            <button @click="deleteLive" class="p-2 text-red-400 hover:text-red-300">
+              <PhTrash :size="20" weight="bold" />
+            </button>
+          </div>
+        </div>
+
         <!-- Actions -->
         <div class="space-y-3">
+          <button
+            @click="showCamera = true"
+            class="w-full py-3 bg-gradient-to-r from-red-500/20 to-pink-500/20 border border-red-500 rounded-xl font-semibold hover:from-red-500/30 hover:to-pink-500/30 transition-all flex items-center justify-center gap-2"
+          >
+            <span>📸</span>
+            <span>{{ profile.livePhotoUrl ? 'ถ่ายรูป Live ใหม่' : 'ถ่ายรูป Live' }}</span>
+          </button>
           <NuxtLink
             to="/song-request"
             class="block w-full py-3 bg-gradient-to-r from-neonPink/20 to-neonCyan/20 border border-neonCyan rounded-xl font-semibold text-center hover:from-neonPink/30 hover:to-neonCyan/30 transition-all"
@@ -191,6 +217,14 @@
       </div>
     </div>
   </div>
+
+  <!-- Camera Modal -->
+  <LivePhotoCamera 
+    :show="showCamera" 
+    :venue-id="profile?.venueId || ''"
+    @close="showCamera = false"
+    @captured="onPhotoCaptured"
+  />
 </template>
 
 <script setup lang="ts">
@@ -198,9 +232,11 @@ import type { Profile } from "~/types";
 
 const router = useRouter();
 const { getCurrentProfile, createOrUpdateProfile } = useProfiles();
+const { deleteLivePhoto } = useLivePhotos();
 
 const loading = ref(true);
 const profile = ref<Profile | null>(null);
+const showCamera = ref(false);
 
 onMounted(async () => {
   profile.value = await getCurrentProfile();
@@ -257,5 +293,30 @@ const leaveSession = async () => {
   localStorage.removeItem('swipedIds');
 
   router.push("/");
+};
+
+const getTimeAgo = (timestamp: any) => {
+  if (!timestamp) return '';
+  const date = timestamp instanceof Date ? timestamp : (timestamp.toDate ? timestamp.toDate() : new Date(timestamp));
+  const now = new Date();
+  const diff = Math.floor((now.getTime() - date.getTime()) / 1000 / 60);
+  
+  if (diff < 1) return 'เพิ่งกี้';
+  if (diff < 60) return `${diff} นาทีที่แล้ว`;
+  const hours = Math.floor(diff / 60);
+  return `${hours} ชั่วโมงที่แล้ว`;
+};
+
+const onPhotoCaptured = async () => {
+  profile.value = await getCurrentProfile();
+  showCamera.value = false;
+};
+
+const deleteLive = async () => {
+  if (!profile.value?.livePhotoId) return;
+  if (!confirm('ต้องการลบรูป Live หรือไม่?')) return;
+  
+  await deleteLivePhoto(profile.value.livePhotoId);
+  profile.value = await getCurrentProfile();
 };
 </script>

@@ -61,19 +61,22 @@
       >
         <div class="flex items-center justify-around px-2 py-3">
           <NuxtLink
-            :to="liveGridUrl"
+            to="/live-feed"
             class="flex flex-col items-center gap-1 transition-all relative"
             :class="
-              route.path.includes('/live')
-                ? 'text-neonCyan scale-110'
+              route.path === '/live-feed'
+                ? 'text-red-500 scale-110'
                 : 'text-slate-400 hover:text-slate-300'
             "
           >
-            <PhUsers :size="24" weight="fill" />
+            <div class="relative">
+              <PhCamera :size="24" weight="fill" />
+              <span v-if="route.path === '/live-feed'" class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+            </div>
             <span class="text-xs font-medium">Live</span>
             <span
-              v-if="route.path.includes('/live')"
-              class="absolute -bottom-1 w-6 h-0.5 bg-neonCyan rounded-full"
+              v-if="route.path === '/live-feed'"
+              class="absolute -bottom-1 w-6 h-0.5 bg-red-500 rounded-full"
             ></span>
           </NuxtLink>
           <NuxtLink
