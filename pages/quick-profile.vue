@@ -11,18 +11,41 @@
         <!-- Profile Photo -->
         <div>
           <label class="block text-sm text-slate-400 mb-2">รูปโปรไฟล์</label>
-          <div class="flex items-center gap-4">
-            <div class="relative w-24 h-24 rounded-xl overflow-hidden bg-slate-800">
-              <img v-if="form.profilePhoto" :src="form.profilePhoto" class="w-full h-full object-cover" />
-              <div v-else class="w-full h-full flex items-center justify-center text-slate-500 text-3xl">+</div>
-            </div>
-            <div class="flex-1">
-              <button type="button" @click="profilePhotoInput?.click()" class="w-full px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-xl text-sm hover:border-neonCyan transition-colors">
-                อัพโหลดรูป
+          <div class="flex justify-center">
+            <div class="relative w-32 h-32">
+              <div v-if="form.profilePhoto" class="w-full h-full rounded-full overflow-hidden bg-slate-800 border-4 border-neonCyan">
+                <img :src="form.profilePhoto" class="w-full h-full object-cover" />
+              </div>
+              <button 
+                v-else
+                type="button" 
+                @click="profilePhotoInput?.click()" 
+                class="w-full h-full rounded-full border-2 border-dashed border-slate-700 flex items-center justify-center text-slate-500 hover:border-neonCyan hover:text-neonCyan transition-colors bg-slate-800"
+              >
+                <div class="text-center">
+                  <PhCamera :size="32" class="text-slate-500 mb-1" weight="fill" />
+                  <div class="text-xs">เพิ่มรูป</div>
+                </div>
               </button>
-              <input ref="profilePhotoInput" type="file" accept="image/*" @change="handleProfilePhotoUpload" class="hidden" />
+              <button 
+                v-if="form.profilePhoto"
+                type="button" 
+                @click="form.profilePhoto = ''; profilePhotoInput!.value = ''" 
+                class="absolute -top-2 -right-2 w-8 h-8 bg-red-500 rounded-full text-white text-xl font-bold flex items-center justify-center hover:bg-red-600 leading-none"
+              >
+                ×
+              </button>
+              <button 
+                v-if="form.profilePhoto"
+                type="button" 
+                @click="profilePhotoInput?.click()" 
+                class="absolute -bottom-2 -right-2 w-8 h-8 bg-neonCyan rounded-full flex items-center justify-center hover:bg-neonCyan/80"
+              >
+                <PhPencil :size="16" class="text-night" weight="bold" />
+              </button>
             </div>
           </div>
+          <input ref="profilePhotoInput" type="file" accept="image/*" capture="environment" @change="handleProfilePhotoUpload" class="hidden" />
         </div>
 
         <!-- Gallery Photos -->
@@ -37,7 +60,7 @@
               <span class="text-3xl">+</span>
             </button>
           </div>
-          <input ref="galleryPhotoInput" type="file" accept="image/*" multiple @change="handleGalleryPhotoUpload" class="hidden" />
+          <input ref="galleryPhotoInput" type="file" accept="image/*" capture="environment" multiple @change="handleGalleryPhotoUpload" class="hidden" />
         </div>
 
         <!-- Nickname -->

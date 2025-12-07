@@ -4,7 +4,7 @@
       <h1 class="text-3xl font-bold mb-6">โปรไฟล์ของคุณ</h1>
 
       <div v-if="loading" class="text-center py-12">
-        <div class="text-4xl animate-pulse">⚙️</div>
+        <PhSpinner :size="48" class="text-neonCyan animate-spin" weight="bold" />
       </div>
 
       <div v-else-if="profile" class="space-y-4">
@@ -69,7 +69,7 @@
             </div>
 
             <div class="flex items-center gap-3">
-              <span class="text-2xl">📍</span>
+              <PhMapPin :size="24" class="text-neonCyan" weight="fill" />
               <div>
                 <p class="text-xs text-slate-400">โซน</p>
                 <p>{{ profile.zone }}</p>
@@ -109,7 +109,7 @@
                   target="_blank"
                   class="flex items-center gap-2 text-green-400 hover:text-green-300"
                 >
-                  <span>📱</span>
+                  <PhChatCircle :size="20" weight="fill" />
                   <span class="text-sm">{{ profile.lineId }}</span>
                 </a>
                 <a
@@ -121,7 +121,7 @@
                   target="_blank"
                   class="flex items-center gap-2 text-pink-400 hover:text-pink-300"
                 >
-                  <span>📸</span>
+                  <PhInstagramLogo :size="20" weight="fill" />
                   <span class="text-sm">{{ profile.instagram }}</span>
                 </a>
                 <a
@@ -133,7 +133,7 @@
                   target="_blank"
                   class="flex items-center gap-2 text-red-400 hover:text-red-300"
                 >
-                  <span>🎵</span>
+                  <PhTiktokLogo :size="20" weight="fill" />
                   <span class="text-sm">{{ profile.tiktok }}</span>
                 </a>
               </div>
@@ -161,7 +161,9 @@
                   : 'bg-slate-700 text-slate-300 border border-slate-600'
               "
             >
-              {{ profile.status === "single" ? "✓ พร้อมคุย" : "✗ ไม่ว่าง" }}
+              <PhCheck v-if="profile.status === 'single'" :size="16" weight="bold" />
+              <PhX v-else :size="16" weight="bold" />
+              {{ profile.status === "single" ? "พร้อมคุย" : "ไม่ว่าง" }}
             </button>
           </div>
         </div>
@@ -175,7 +177,7 @@
             </div>
             <div class="flex-1">
               <p class="font-semibold flex items-center gap-2">
-                <span class="text-red-500">🔴</span> LIVE
+                <PhRecordFill :size="16" class="text-red-500" weight="fill" /> LIVE
               </p>
               <p class="text-xs text-slate-400">ถ่ายเมื่อ {{ getTimeAgo(profile.livePhotoCapturedAt) }}</p>
             </div>
@@ -187,30 +189,39 @@
 
         <!-- Actions -->
         <div class="space-y-3">
+          <!-- Live Photo Button -->
           <button
             @click="showCamera = true"
-            class="w-full py-3 bg-gradient-to-r from-red-500/20 to-pink-500/20 border border-red-500 rounded-xl font-semibold hover:from-red-500/30 hover:to-pink-500/30 transition-all flex items-center justify-center gap-2"
+            class="w-full py-3.5 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl font-semibold hover:shadow-[0_0_20px_rgba(239,68,68,0.5)] transition-all flex items-center justify-center gap-2 text-white"
           >
-            <span>📸</span>
-            <span>{{ profile.livePhotoUrl ? 'ถ่ายรูป Live ใหม่' : 'ถ่ายรูป Live' }}</span>
+            <PhCamera :size="22" weight="bold" />
+            <span>{{ profile.livePhotoUrl ? 'ถ่ายรูป Live ใหม่' : 'ถ่ายรูบ Live' }}</span>
           </button>
+
+          <!-- Song Request Button -->
           <NuxtLink
             to="/song-request"
-            class="block w-full py-3 bg-gradient-to-r from-neonPink/20 to-neonCyan/20 border border-neonCyan rounded-xl font-semibold text-center hover:from-neonPink/30 hover:to-neonCyan/30 transition-all"
+            class="flex items-center justify-center gap-2 w-full py-3.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-semibold hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] transition-all text-white"
           >
-            🎵 ขอเพลง
+            <PhMusicNote :size="22" weight="fill" />
+            ขอเพลง
           </NuxtLink>
+
+          <!-- Edit Profile Button -->
           <button
             @click="editProfile"
-            class="w-full py-3 bg-slate-800 border border-slate-700 rounded-xl font-semibold hover:border-neonCyan transition-colors"
+            class="w-full py-3.5 bg-gradient-to-r from-neonCyan to-blue-500 rounded-xl font-semibold hover:shadow-[0_0_20px_rgba(14,165,233,0.5)] transition-all flex items-center justify-center gap-2 text-white"
           >
+            <PhPencil :size="20" weight="bold" />
             แก้ไขโปรไฟล์
           </button>
 
+          <!-- Leave Session Button -->
           <button
             @click="leaveSession"
-            class="w-full py-3 bg-neonPink/20 border border-neonPink rounded-xl font-semibold text-neonPink hover:bg-neonPink/30 transition-colors"
+            class="w-full py-3.5 bg-slate-800/80 border border-slate-600 rounded-xl font-semibold text-slate-300 hover:bg-slate-700 hover:border-slate-500 transition-all flex items-center justify-center gap-2"
           >
+            <PhSignOut :size="20" weight="bold" />
             ออกจากร้าน
           </button>
         </div>

@@ -3,27 +3,28 @@
     <div class="max-w-4xl mx-auto">
       <div class="mb-6">
         <h1 class="text-3xl font-bold flex items-center gap-2">
-          <span class="text-red-500">🔴</span> Live ในร้าน
+          <PhRecordFill :size="32" class="text-red-500" weight="fill" /> Live ในร้าน
         </h1>
         <p class="text-slate-400 mt-1">คนที่กำลังอยู่ในร้านตอนนี้</p>
       </div>
 
       <!-- Loading -->
       <div v-if="loading" class="text-center py-12">
-        <div class="text-4xl animate-pulse">⏳</div>
+        <PhSpinner :size="48" class="text-neonCyan animate-spin" weight="bold" />
         <p class="text-slate-400 mt-2">กำลังโหลด...</p>
       </div>
 
       <!-- Empty State -->
       <div v-else-if="livePhotos.length === 0" class="text-center py-12">
-        <div class="text-6xl mb-4">📸</div>
+        <PhCamera :size="64" class="text-slate-600 mx-auto mb-4" weight="duotone" />
         <h3 class="text-xl font-bold mb-2">ยังไม่มีรูป Live</h3>
         <p class="text-slate-400 mb-6">เป็นคนแรกที่ถ่ายรูป Live ในร้านนี้!</p>
         <NuxtLink 
           to="/profile"
-          class="inline-block px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl font-semibold hover:shadow-xl transition-all"
+          class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl font-semibold hover:shadow-xl transition-all"
         >
-          📸 ถ่ายรูป Live
+          <PhCamera :size="20" weight="bold" />
+          ถ่ายรูป Live
         </NuxtLink>
       </div>
 
@@ -57,7 +58,8 @@
 
           <!-- Likes -->
           <div v-if="photo.likes > 0" class="absolute top-2 right-2 bg-black/60 backdrop-blur-sm rounded-full px-2 py-0.5 text-xs text-white flex items-center gap-1">
-            ❤️ {{ photo.likes }}
+            <PhHeart :size="12" weight="fill" class="text-red-400" />
+            {{ photo.likes }}
           </div>
         </div>
       </div>
@@ -76,7 +78,7 @@
             @click="selectedPhoto = null"
             class="absolute -top-12 right-0 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
           >
-            ✕
+            <PhX :size="24" weight="bold" class="text-white" />
           </button>
 
           <!-- Photo Card -->
@@ -112,14 +114,15 @@
                   :disabled="hasLiked(selectedPhoto)"
                   class="flex-1 py-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl font-semibold hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  <span>{{ hasLiked(selectedPhoto) ? '❤️' : '🤍' }}</span>
+                  <PhHeart :size="20" :weight="hasLiked(selectedPhoto) ? 'fill' : 'bold'" />
                   <span>{{ selectedPhoto.likes }} ถูกใจ</span>
                 </button>
                 <button 
                   @click="sendVibeToUser(selectedPhoto.userId)"
-                  class="flex-1 py-3 bg-gradient-to-r from-neonPink to-neonCyan rounded-xl font-semibold hover:shadow-xl transition-all"
+                  class="flex-1 py-3 bg-gradient-to-r from-neonPink to-neonCyan rounded-xl font-semibold hover:shadow-xl transition-all flex items-center justify-center gap-2"
                 >
-                  💬 ส่ง Vibe
+                  <PhChatCircle :size="20" weight="fill" />
+                  ส่ง Vibe
                 </button>
               </div>
             </div>

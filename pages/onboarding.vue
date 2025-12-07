@@ -44,7 +44,7 @@
               </button>
             </div>
           </div>
-          <input ref="profilePhotoInput" type="file" accept="image/*" @change="handleProfilePhotoUpload" class="hidden" />
+          <input ref="profilePhotoInput" type="file" accept="image/*" capture="environment" @change="handleProfilePhotoUpload" class="hidden" />
         </div>
 
         <!-- Display Name -->
@@ -189,7 +189,7 @@
               </div>
             </button>
           </div>
-          <input ref="galleryPhotoInput" type="file" accept="image/*" multiple @change="handleGalleryPhotoUpload" class="hidden" />
+          <input ref="galleryPhotoInput" type="file" accept="image/*" capture="environment" multiple @change="handleGalleryPhotoUpload" class="hidden" />
         </div>
 
         <!-- Social Media -->
