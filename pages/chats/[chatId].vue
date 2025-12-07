@@ -49,8 +49,8 @@
             <PhMapPin :size="14" weight="fill" /> {{ otherProfile?.zone || "ไม่ทราบโซน" }}
           </p>
         </div>
-        <button @click="showBlockModal = true" class="p-2 hover:bg-slate-800 rounded-lg transition-colors">
-          <PhWarning :size="20" class="text-slate-400" weight="fill" />
+        <button @click="showMenuModal = true" class="p-2 hover:bg-slate-800 rounded-lg transition-colors">
+          <PhDotsThreeVertical :size="24" class="text-slate-400" weight="bold" />
         </button>
       </div>
     </div>
@@ -58,7 +58,7 @@
     <!-- Messages -->
     <div
       ref="messagesContainer"
-      class="flex-1 overflow-y-auto p-4 space-y-3 pt-20 pb-48"
+      class="flex-1 overflow-y-auto p-4 space-y-3 pt-20 pb-[280px]"
     >
       <template v-for="(message, index) in messages" :key="message.id">
         <!-- Date Separator -->
@@ -180,7 +180,28 @@
       </div>
     </div>
     
-    <!-- Block Modal -->
+    <!-- Menu Modal -->
+    <Teleport to="body">
+      <div v-if="showMenuModal" @click="showMenuModal = false" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-end justify-center z-[100] p-4">
+        <div @click.stop class="bg-slate-900 rounded-t-3xl w-full max-w-md p-6 space-y-3 animate-slide-up">
+          <button 
+            @click="showMenuModal = false; showBlockModal = true"
+            class="w-full py-4 bg-red-500/20 border border-red-500 rounded-xl font-semibold text-red-400 hover:bg-red-500/30 transition-all flex items-center justify-center gap-2"
+          >
+            <PhProhibit :size="20" weight="bold" />
+            บล็อกผู้ใช้
+          </button>
+          <button 
+            @click="showMenuModal = false"
+            class="w-full py-4 bg-slate-800 rounded-xl font-semibold text-slate-300 hover:bg-slate-700 transition-all"
+          >
+            ยกเลิก
+          </button>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Block Confirmation Modal -->
     <Teleport to="body">
       <div v-if="showBlockModal" @click="showBlockModal = false" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-6">
         <div @click.stop class="bg-slate-900 rounded-xl border border-slate-700 p-6 max-w-sm w-full space-y-4">
@@ -228,6 +249,7 @@ const messagesContainer = ref<HTMLElement>();
 const replyingTo = ref<Message | null>(null);
 const showEmojiPicker = ref(false);
 const showBlockModal = ref(false);
+const showMenuModal = ref(false);
 const imageInput = ref<HTMLInputElement>();
 const uploadedImage = ref<string | null>(null);
 const viewingImage = ref<string | null>(null);
